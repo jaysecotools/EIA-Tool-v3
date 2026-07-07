@@ -9,6 +9,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
+    <!-- Leaflet for mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -589,6 +593,47 @@
             margin-top: 1rem;
         }
 
+        /* Map styles */
+        #map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 0.5rem 0 1rem 0;
+            background: #f0f0f0;
+            z-index: 1;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .map-controls .btn {
+            flex: 0 1 auto;
+        }
+
+        .map-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .map-coords {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+
+        /* Leaflet control geocoder fix */
+        .leaflet-control-geocoder {
+            z-index: 1000;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -610,6 +655,15 @@
                 flex-direction: column;
             }
             .btn {
+                width: 100%;
+            }
+            #map-container {
+                height: 350px;
+            }
+            .map-controls {
+                flex-direction: column;
+            }
+            .map-controls input[type="text"] {
                 width: 100%;
             }
         }
@@ -950,6 +1004,29 @@
             </div>
         </div>
 
+        <!-- Location Map Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🗺️ Project Location Map</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="map-controls">
+                    <input type="text" id="address-search" placeholder="Search for an address..." style="flex:1; min-width:200px;">
+                    <button class="btn" onclick="searchAddress()">🔍 Search</button>
+                    <button class="btn" onclick="useMyLocation()">📍 My Location</button>
+                    <button class="btn" onclick="dropMarkerAtCenter()">📌 Drop Marker Here</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearMarker()">✖ Clear Marker</button>
+                </div>
+                <div id="map-container"></div>
+                <div class="map-coords" id="map-coords-display">
+                    <strong>Marker Coordinates:</strong> <span id="coord-display">None set</span>
+                    <span style="margin-left:1rem;"><strong>Address:</strong> <span id="address-display">None</span></span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.5rem;">Click on the map to drop a marker. The marker will appear in the PDF report.</p>
+            </div>
+        </div>
+
         <!-- Tasmania Bioregion Selection Card -->
         <div class="card">
             <div class="card-header" onclick="toggleCard(this)">
@@ -1049,7 +1126,6 @@
             { id: "carbon", label: "🌍 Carbon Footprint", weight: 0.08 }
         ];
 
-        // Detailed result indicators for each slider value
         const RESULT_INDICATORS = {
             erosion: [
                 { max: 20, label: "Stable", color: "#28a745" },
@@ -1184,6 +1260,14 @@
         let selectedBioregion = null;
         let currentMultiplier = 1.0;
 
+        // Map state
+        let map = null;
+        let marker = null;
+        let mapInitialized = false;
+        let markerLat = null;
+        let markerLng = null;
+        let markerAddress = '';
+
         // ============================================
         // INITIALIZATION
         // ============================================
@@ -1218,9 +1302,292 @@
             renderRiskComparison();
             renderProjections();
             renderCompliance();
+            
+            // Initialize map after a small delay to ensure DOM is ready
+            setTimeout(initMap, 800);
+            
             setInterval(saveToLocalStorage, 30000);
             showNotification('Tasmanian EIA Tool Ready', 'success');
         });
+
+        // ============================================
+        // MAP FUNCTIONS - FIXED
+        // ============================================
+        function initMap() {
+            if (mapInitialized) return;
+            
+            const container = document.getElementById('map-container');
+            if (!container) {
+                console.error('Map container not found');
+                return;
+            }
+            
+            // Check if container is visible
+            if (container.offsetParent === null) {
+                // Container is hidden, wait and retry
+                setTimeout(initMap, 500);
+                return;
+            }
+            
+            try {
+                // Default to Tasmania center
+                const defaultLat = -42.0;
+                const defaultLng = 146.5;
+                
+                // Force container to have a size
+                container.style.height = '500px';
+                container.style.width = '100%';
+                container.style.display = 'block';
+                
+                map = L.map('map-container', {
+                    center: [defaultLat, defaultLng],
+                    zoom: 7,
+                    zoomControl: true
+                });
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Click to drop marker
+                map.on('click', function(e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng);
+                });
+                
+                mapInitialized = true;
+                
+                // Force a resize after a moment to ensure proper rendering
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                        console.log('Map size invalidated');
+                    }
+                }, 300);
+                
+                // Also invalidate on window resize
+                window.addEventListener('resize', function() {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                });
+                
+                // Load saved marker from localStorage
+                const savedMarker = localStorage.getItem('eia_map_marker');
+                if (savedMarker) {
+                    try {
+                        const data = JSON.parse(savedMarker);
+                        if (data.lat && data.lng) {
+                            setTimeout(() => {
+                                setMarker(data.lat, data.lng);
+                                if (data.address) {
+                                    markerAddress = data.address;
+                                    document.getElementById('address-display').textContent = data.address;
+                                }
+                                if (data.address) {
+                                    document.getElementById('location').value = data.address;
+                                } else if (data.lat && data.lng) {
+                                    document.getElementById('location').value = `${data.lat}, ${data.lng}`;
+                                }
+                            }, 400);
+                        }
+                    } catch(e) {
+                        console.error('Error loading saved marker:', e);
+                    }
+                }
+                
+                console.log('Map initialized successfully');
+            } catch (e) {
+                console.error('Error initializing map:', e);
+            }
+        }
+
+        function setMarker(lat, lng) {
+            if (!map) {
+                console.error('Map not initialized');
+                return;
+            }
+            
+            markerLat = lat;
+            markerLng = lng;
+            
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            
+            marker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(map);
+            
+            marker.on('dragend', function(e) {
+                const pos = marker.getLatLng();
+                markerLat = pos.lat;
+                markerLng = pos.lng;
+                updateCoordDisplay();
+                reverseGeocode(pos.lat, pos.lng);
+                saveMarkerToStorage();
+            });
+            
+            map.setView([lat, lng], 14);
+            updateCoordDisplay();
+            saveMarkerToStorage();
+        }
+
+        function updateCoordDisplay() {
+            if (markerLat !== null && markerLng !== null) {
+                document.getElementById('coord-display').textContent = `${markerLat.toFixed(6)}, ${markerLng.toFixed(6)}`;
+                const address = document.getElementById('address-display').textContent;
+                if (address && address !== 'None') {
+                    document.getElementById('location').value = address;
+                } else {
+                    document.getElementById('location').value = `${markerLat.toFixed(6)}, ${markerLng.toFixed(6)}`;
+                }
+            }
+        }
+
+        function reverseGeocode(lat, lng) {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        markerAddress = data.display_name;
+                        document.getElementById('address-display').textContent = data.display_name;
+                        document.getElementById('location').value = data.display_name;
+                        saveMarkerToStorage();
+                    }
+                })
+                .catch(() => {
+                    // Silently fail - coordinates still work
+                });
+        }
+
+        function searchAddress() {
+            const query = document.getElementById('address-search').value.trim();
+            if (!query) {
+                showNotification('Please enter an address to search', 'error');
+                return;
+            }
+            
+            showNotification('Searching...', 'info');
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lng = parseFloat(data[0].lon);
+                        setMarker(lat, lng);
+                        markerAddress = data[0].display_name;
+                        document.getElementById('address-display').textContent = data[0].display_name;
+                        document.getElementById('location').value = data[0].display_name;
+                        saveMarkerToStorage();
+                        showNotification('Location found!', 'success');
+                    } else {
+                        showNotification('Address not found', 'error');
+                    }
+                })
+                .catch(() => {
+                    showNotification('Search failed. Please try again.', 'error');
+                });
+        }
+
+        function useMyLocation() {
+            if (!map) {
+                showNotification('Map not initialized. Please expand the map card first.', 'error');
+                ensureMapVisible();
+                setTimeout(() => {
+                    if (map) {
+                        // Retry after map is ready
+                        useMyLocation();
+                    }
+                }, 600);
+                return;
+            }
+            
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error');
+                return;
+            }
+            
+            showNotification('Getting your location...', 'info');
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng);
+                    showNotification('Location found!', 'success');
+                },
+                function(error) {
+                    showNotification('Unable to get your location. Please check permissions.', 'error');
+                    console.error('Geolocation error:', error);
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function dropMarkerAtCenter() {
+            if (!map) {
+                showNotification('Map not initialized. Please expand the map card first.', 'error');
+                // Try to initialize the map
+                ensureMapVisible();
+                setTimeout(() => {
+                    if (map) {
+                        const center = map.getCenter();
+                        setMarker(center.lat, center.lng);
+                        reverseGeocode(center.lat, center.lng);
+                        showNotification('Marker dropped at map center', 'success');
+                    } else {
+                        showNotification('Could not initialize map. Please refresh the page.', 'error');
+                    }
+                }, 600);
+                return;
+            }
+            const center = map.getCenter();
+            setMarker(center.lat, center.lng);
+            reverseGeocode(center.lat, center.lng);
+            showNotification('Marker dropped at map center', 'success');
+        }
+
+        function clearMarker() {
+            if (marker) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+            markerLat = null;
+            markerLng = null;
+            markerAddress = '';
+            document.getElementById('coord-display').textContent = 'None set';
+            document.getElementById('address-display').textContent = 'None';
+            localStorage.removeItem('eia_map_marker');
+            showNotification('Marker cleared', 'info');
+        }
+
+        function saveMarkerToStorage() {
+            if (markerLat !== null && markerLng !== null) {
+                const data = {
+                    lat: markerLat,
+                    lng: markerLng,
+                    address: markerAddress || document.getElementById('address-display').textContent
+                };
+                localStorage.setItem('eia_map_marker', JSON.stringify(data));
+            }
+        }
+
+        function getMapData() {
+            if (markerLat !== null && markerLng !== null) {
+                return {
+                    lat: markerLat,
+                    lng: markerLng,
+                    address: markerAddress || document.getElementById('address-display').textContent || 'Location on map'
+                };
+            }
+            return null;
+        }
 
         // ============================================
         // RISK SLIDERS WITH RESULT INDICATORS
@@ -1447,6 +1814,7 @@
                 "📅 Set milestones to monitor project timeline",
                 "💰 Budget updates automatically based on risk levels and bioregion",
                 "🇦🇺 Check EPBC Act referral requirements",
+                "🗺️ Use the map to pinpoint your project location",
                 "📄 Generate PDF reports for documentation"
             ];
             const container = document.getElementById('guidance-container');
@@ -1738,6 +2106,7 @@
         function saveToLocalStorage() {
             const riskValues = RISK_METRICS.map(m => document.getElementById(`slider-${m.id}`).value);
             const selectedActivities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
+            const mapData = getMapData();
             const data = {
                 projectName: document.getElementById('project-name').value,
                 location: document.getElementById('location').value,
@@ -1755,7 +2124,8 @@
                 accessibility: document.getElementById('accessibility').value,
                 riskValues, selectedActivities, stakeholders, milestones,
                 projectArea: document.getElementById('project-area').value,
-                selectedBioregion
+                selectedBioregion,
+                mapData: mapData
             };
             localStorage.setItem('eia_assessment_complete', JSON.stringify(data));
         }
@@ -1810,6 +2180,7 @@
             const activities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value).join(';');
             const score = calculateTotalRisk();
             const riskLevel = getRiskLevel(score).level;
+            const mapData = getMapData();
             const rows = [
                 ['Section','Field','Value'],
                 ['Project','Project Name', document.getElementById('project-name').value || 'N/A'],
@@ -1824,7 +2195,10 @@
                 ['Budget','Project Area (ha)', document.getElementById('project-area').value || '1'],
                 ['Stakeholders','Total', stakeholders.length],
                 ['Stakeholders','Confirmed', stakeholders.filter(s => s.status === 'Confirmed').length],
-                ['Milestones','Total', milestones.length]
+                ['Milestones','Total', milestones.length],
+                ['Map','Latitude', mapData ? mapData.lat : 'N/A'],
+                ['Map','Longitude', mapData ? mapData.lng : 'N/A'],
+                ['Map','Address', mapData ? mapData.address : 'N/A']
             ];
             const csvContent = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1861,7 +2235,7 @@
         }
 
         // ============================================
-        // PROFESSIONAL PDF GENERATION
+        // PROFESSIONAL PDF GENERATION WITH MAP
         // ============================================
         function generatePDF() {
             const { jsPDF } = window.jspdf;
@@ -1923,7 +2297,6 @@
             doc.text(subLines, margin, y);
             y += subLines.length * 6 + 15;
             
-            // Project name on title page
             const projName = sanitize(document.getElementById('project-name').value || 'Unnamed Project');
             doc.setFontSize(14);
             doc.setTextColor(0, 0, 0);
@@ -1941,13 +2314,68 @@
             doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
             y += 20;
             
-            // Footer on all pages
-            function addFooter(pageNum) {
-                doc.setPage(pageNum);
+            // ===== MAP PAGE =====
+            const mapData = getMapData();
+            if (mapData) {
+                doc.addPage();
+                y = margin;
+                y = addHeading('Project Location Map', y, 16);
+                y = addDivider(y);
+                doc.setFontSize(11);
+                doc.setTextColor(0,0,0);
+                y = addText(`Coordinates: ${mapData.lat.toFixed(6)}, ${mapData.lng.toFixed(6)}`, margin, y, 11);
+                y += 4;
+                y = addText(`Address: ${sanitize(mapData.address || 'Location on map')}`, margin, y, 11);
+                y += 8;
+                
+                // Draw a professional map representation with a marker
+                doc.setDrawColor(200, 200, 200);
+                doc.setFillColor(240, 248, 240);
+                doc.rect(margin, y, pageWidth - margin * 2, 90, 'FD');
+                doc.setDrawColor(30, 90, 62);
+                doc.setLineWidth(1);
+                doc.rect(margin, y, pageWidth - margin * 2, 90);
+                
+                // Draw a crosshair/grid pattern
+                doc.setDrawColor(200, 200, 200);
+                doc.setLineWidth(0.3);
+                const centerX = pageWidth / 2;
+                const centerY = y + 45;
+                // Grid lines
+                for (let i = -3; i <= 3; i++) {
+                    doc.line(centerX + i * 20, centerY - 30, centerX + i * 20, centerY + 30);
+                    doc.line(centerX - 30, centerY + i * 20, centerX + 30, centerY + i * 20);
+                }
+                
+                // Draw marker
+                doc.setFillColor(200, 50, 50);
+                doc.circle(centerX, centerY, 8, 'F');
+                doc.setFillColor(255, 255, 255);
+                doc.circle(centerX, centerY, 4, 'F');
+                
+                // Draw a pin shape
+                doc.setDrawColor(200, 50, 50);
+                doc.setLineWidth(1);
+                doc.line(centerX, centerY + 8, centerX, centerY + 25);
+                doc.setFillColor(200, 50, 50);
+                doc.triangle(centerX - 4, centerY + 25, centerX + 4, centerY + 25, centerX, centerY + 32, 'F');
+                
+                // Label
+                doc.setFontSize(9);
+                doc.setTextColor(60, 60, 60);
+                doc.setFont('helvetica', 'bold');
+                doc.text('● Project Location', centerX - 25, y + 78);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text('(approximate position)', centerX - 22, y + 86);
+                
+                y += 100;
+                
+                // Add map disclaimer
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
-                doc.setFont('helvetica', 'normal');
-                doc.text(`Tasmanian EIA Report - Page ${pageNum} of {total} - Professional Assessment`, margin, doc.internal.pageSize.height - 10);
+                doc.text('Map data © OpenStreetMap contributors. Location is approximate.', margin, y);
+                y += 10;
             }
 
             // ===== CONTENT PAGES =====
@@ -2114,7 +2542,7 @@
             
             const filename = `Tasmania_EIA_Report_${sanitize(document.getElementById('project-name').value || 'project')}_${new Date().toISOString().slice(0,10)}.pdf`;
             doc.save(filename);
-            showNotification('Professional PDF report generated', 'success');
+            showNotification('Professional PDF report generated with map location', 'success');
         }
 
         // ============================================
@@ -2140,6 +2568,8 @@
             document.getElementById('selected-bioregion-info').innerHTML = '';
             document.getElementById('bioregion-risk-impact').innerHTML = '';
             document.getElementById('offsets-result').style.display = 'none';
+            // Clear map
+            clearMarker();
             localStorage.removeItem('eia_assessment_complete');
             renderStakeholders();
             renderTimeline();
@@ -2172,8 +2602,44 @@
 
         function toggleCard(header) {
             const content = header.nextElementSibling;
+            const isCollapsed = header.classList.contains('collapsed');
             header.classList.toggle('collapsed');
             content.classList.toggle('collapsed');
+            
+            // Check if this is the map card being expanded
+            const headerText = header.querySelector('h2')?.textContent || '';
+            if (headerText.includes('🗺️') && isCollapsed) {
+                // Map card is being expanded
+                setTimeout(ensureMapVisible, 400);
+            }
+        }
+
+        // This function should be called when the map card is expanded
+        function ensureMapVisible() {
+            if (!mapInitialized) {
+                // Try to initialize the map
+                initMap();
+            } else if (map) {
+                // If map exists but might be hidden, invalidate size
+                setTimeout(() => {
+                    map.invalidateSize();
+                    console.log('Map size invalidated on card expand');
+                }, 300);
+            }
+        }
+
+        // ============================================
+        // RENDER FUNCTIONS - Defined before use
+        // ============================================
+        function renderRiskComparison() {
+            // This is now defined above, but we keep it here for clarity
+            // The actual implementation is in the updateRiskComparison function
+            updateRiskComparison();
+        }
+
+        function renderProjections() {
+            // This is now defined above, but we keep it here for clarity
+            updateProjections();
         }
     </script>
 </body>
