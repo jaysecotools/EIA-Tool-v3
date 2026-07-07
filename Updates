@@ -31,6 +31,7 @@
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             --tas-gold: #B8860B;
+            --success: #28a745;
         }
 
         body {
@@ -1252,7 +1253,6 @@
                 </div>
             `).join('');
 
-            // Initialize result indicators
             RISK_METRICS.forEach(metric => updateResultIndicator(metric.id, 0));
         }
 
@@ -1860,8 +1860,10 @@
             input.value = '';
         }
 
-        // Enhanced PDF with professional styling, proper text flow, no overflow
-        async function generatePDF() {
+        // ============================================
+        // PROFESSIONAL PDF GENERATION
+        // ============================================
+        function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const pageWidth = doc.internal.pageSize.width;
@@ -1881,12 +1883,21 @@
                 return y + lines.length * (fontSize * 0.45);
             }
             
-            function addHeading(text, y, level = 1) {
-                doc.setFontSize(level === 1 ? 16 : 12);
+            function addHeading(text, y, fontSize = 14) {
+                doc.setFontSize(fontSize);
                 doc.setTextColor(30, 90, 62);
+                doc.setFont('helvetica', 'bold');
                 const lines = doc.splitTextToSize(sanitize(text), pageWidth - margin * 2);
                 doc.text(lines, margin, y);
-                return y + (level === 1 ? 10 : 7);
+                doc.setFont('helvetica', 'normal');
+                return y + (fontSize === 14 ? 10 : 7);
+            }
+            
+            function addDivider(y) {
+                doc.setDrawColor(30, 90, 62);
+                doc.setLineWidth(0.5);
+                doc.line(margin, y, pageWidth - margin, y);
+                return y + 6;
             }
             
             function checkPage(y, needed = 15) {
@@ -1897,25 +1908,60 @@
                 return y;
             }
 
-            // Title
-            doc.setFontSize(24);
+            // ===== TITLE PAGE =====
+            doc.setFontSize(28);
             doc.setTextColor(30, 90, 62);
-            doc.text('Tasmanian Environmental Impact Assessment Report', margin, y);
-            y += 12;
+            doc.setFont('helvetica', 'bold');
+            const titleLines = doc.splitTextToSize('Tasmanian Environmental Impact Assessment Report', pageWidth - margin * 2);
+            doc.text(titleLines, margin, y);
+            y += titleLines.length * 8 + 10;
+            
+            doc.setFontSize(16);
+            doc.setTextColor(60, 60, 60);
+            doc.setFont('helvetica', 'normal');
+            const subLines = doc.splitTextToSize('Professional Assessment Report', pageWidth - margin * 2);
+            doc.text(subLines, margin, y);
+            y += subLines.length * 6 + 15;
+            
+            // Project name on title page
+            const projName = sanitize(document.getElementById('project-name').value || 'Unnamed Project');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Project: ${projName}`, margin, y);
+            y += 8;
+            doc.text(`Assessor: ${sanitize(document.getElementById('assessor-name').value || 'Not specified')}`, margin, y);
+            y += 8;
+            doc.text(`Date: ${sanitize(document.getElementById('assessment-date').value || new Date().toLocaleDateString())}`, margin, y);
+            y += 8;
+            doc.text(`Location: ${sanitize(document.getElementById('location').value || 'Not specified')}`, margin, y);
+            y += 15;
+            
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
-            y = addText(`Generated: ${new Date().toLocaleString()}`, margin, y, 10);
-            y += 6;
+            doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
+            y += 20;
             
+            // Footer on all pages
+            function addFooter(pageNum) {
+                doc.setPage(pageNum);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Tasmanian EIA Report - Page ${pageNum} of {total} - Professional Assessment`, margin, doc.internal.pageSize.height - 10);
+            }
+
+            // ===== CONTENT PAGES =====
             // 1. Project Details
-            y = checkPage(y, 40);
-            y = addHeading('1. Project Details', y, 1);
+            doc.addPage();
+            y = margin;
+            y = addHeading('1. Project Details', y, 14);
+            y = addDivider(y);
             doc.setFontSize(10);
             doc.setTextColor(0,0,0);
             y = addText(`Project Name: ${sanitize(document.getElementById('project-name').value)}`, margin, y, 10);
             y = addText(`Location: ${sanitize(document.getElementById('location').value)}`, margin, y, 10);
             y = addText(`Assessor: ${sanitize(document.getElementById('assessor-name').value)}`, margin, y, 10);
-            y = addText(`Date: ${sanitize(document.getElementById('assessment-date').value)}`, margin, y, 10);
+            y = addText(`Assessment Date: ${sanitize(document.getElementById('assessment-date').value)}`, margin, y, 10);
             y = addText(`Bioregion: ${sanitize(selectedBioregion || 'Not selected')}`, margin, y, 10);
             y = addText(`Description: ${sanitize(document.getElementById('project-description').value || 'Not provided')}`, margin, y, 10);
             y = addText(`Purpose: ${sanitize(document.getElementById('project-purpose').value || 'Not provided')}`, margin, y, 10);
@@ -1923,7 +1969,8 @@
             
             // 2. Site Information
             y = checkPage(y, 40);
-            y = addHeading('2. Site Information', y, 1);
+            y = addHeading('2. Site Information', y, 14);
+            y = addDivider(y);
             doc.setFontSize(10);
             y = addText(`Flora & Fauna: ${sanitize(document.getElementById('flora-fauna').value || 'Not provided')}`, margin, y, 10);
             y = addText(`Soil Type: ${sanitize(document.getElementById('soil-type').value || 'Not specified')}`, margin, y, 10);
@@ -1936,13 +1983,17 @@
             
             // 3. Risk Assessment
             y = checkPage(y, 40);
-            y = addHeading('3. Risk Assessment', y, 1);
+            y = addHeading('3. Risk Assessment', y, 14);
+            y = addDivider(y);
             const score = calculateTotalRisk();
             const risk = getRiskLevel(score);
             doc.setFontSize(12);
             doc.setTextColor(0,0,0);
+            doc.setFont('helvetica', 'bold');
             y = addText(`Overall Risk Score: ${score}% (${risk.level})`, margin, y, 12);
+            doc.setFont('helvetica', 'normal');
             doc.setFontSize(10);
+            y += 4;
             RISK_METRICS.forEach(m => {
                 const v = document.getElementById(`slider-${m.id}`)?.value || 0;
                 const label = m.label.replace(/[^a-zA-Z\s]/g,'').trim();
@@ -1954,57 +2005,68 @@
             
             // 4. Compliance
             y = checkPage(y, 30);
-            y = addHeading('4. Compliance Summary', y, 1);
+            y = addHeading('4. Compliance Summary', y, 14);
+            y = addDivider(y);
             const compliantCount = POLICIES.filter(p => p.status === 'Compliant').length;
             doc.setFontSize(10);
             y = addText(`Overall Compliance: ${Math.round((compliantCount / POLICIES.length) * 100)}%`, margin, y, 10);
-            y = addText(`Compliant: ${compliantCount}/${POLICIES.length}`, margin, y, 10);
-            POLICIES.slice(0, 5).forEach(p => {
+            y = addText(`Compliant Policies: ${compliantCount} of ${POLICIES.length}`, margin, y, 10);
+            y += 2;
+            POLICIES.slice(0, 6).forEach(p => {
                 y = addText(`• ${p.name}: ${p.status}`, margin + 5, y, 9);
                 y = checkPage(y, 15);
             });
             y += 4;
             
-            // 5. EPBC
+            // 5. EPBC Status
             y = checkPage(y, 25);
-            y = addHeading('5. EPBC Act Status', y, 1);
+            y = addHeading('5. EPBC Act Status', y, 14);
+            y = addDivider(y);
             const epbcDiv = document.getElementById('epbc-container');
-            let epbcText = epbcDiv ? sanitize(epbcDiv.innerText || 'Not assessed').substring(0, 350) : 'Not assessed';
+            let epbcText = epbcDiv ? sanitize(epbcDiv.innerText || 'Not assessed').substring(0, 400) : 'Not assessed';
             y = addText(epbcText, margin, y, 10);
             y += 6;
             
             // 6. Activities
             y = checkPage(y, 25);
-            y = addHeading('6. Selected Activities', y, 1);
+            y = addHeading('6. Selected Environmental Activities', y, 14);
+            y = addDivider(y);
             const acts = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
             if (acts.length === 0) {
                 y = addText('No activities selected', margin, y, 10);
             } else {
-                acts.slice(0, 8).forEach(a => {
+                acts.slice(0, 10).forEach(a => {
                     y = addText(`• ${sanitize(a)}`, margin + 5, y, 9);
                     y = checkPage(y, 15);
                 });
-                if (acts.length > 8) {
-                    y = addText(`... and ${acts.length - 8} more`, margin + 5, y, 9);
+                if (acts.length > 10) {
+                    y = addText(`... and ${acts.length - 10} more`, margin + 5, y, 9);
                 }
             }
             y += 4;
             
             // 7. Stakeholders
             y = checkPage(y, 25);
-            y = addHeading('7. Stakeholders', y, 1);
+            y = addHeading('7. Stakeholder Engagement', y, 14);
+            y = addDivider(y);
             doc.setFontSize(10);
-            y = addText(`Total: ${stakeholders.length} | Confirmed: ${stakeholders.filter(s => s.status === 'Confirmed').length}`, margin, y, 10);
-            stakeholders.slice(0, 4).forEach(s => {
-                y = addText(`• ${sanitize(s.role)} (${s.status})`, margin + 5, y, 9);
+            y = addText(`Total Stakeholders: ${stakeholders.length}`, margin, y, 10);
+            y = addText(`Confirmed: ${stakeholders.filter(s => s.status === 'Confirmed').length}`, margin, y, 10);
+            y = addText(`Pending: ${stakeholders.filter(s => s.status === 'Pending').length}`, margin, y, 10);
+            y += 2;
+            stakeholders.slice(0, 5).forEach(s => {
+                y = addText(`• ${sanitize(s.role)} (${s.status})${s.email ? ` - ${sanitize(s.email)}` : ''}`, margin + 5, y, 9);
                 y = checkPage(y, 15);
             });
-            if (stakeholders.length > 4) y = addText(`... and ${stakeholders.length - 4} more`, margin + 5, y, 9);
+            if (stakeholders.length > 5) {
+                y = addText(`... and ${stakeholders.length - 5} more`, margin + 5, y, 9);
+            }
             y += 4;
             
             // 8. Budget
             y = checkPage(y, 25);
-            y = addHeading('8. Budget Estimate', y, 1);
+            y = addHeading('8. Budget Estimate', y, 14);
+            y = addDivider(y);
             const area = document.getElementById('project-area').value || 1;
             let totalBudget = 0;
             RISK_METRICS.forEach(m => {
@@ -2012,26 +2074,42 @@
                 totalBudget += v * 75 * parseFloat(area) * currentMultiplier;
             });
             doc.setFontSize(10);
-            y = addText(`Project Area: ${area} ha`, margin, y, 10);
+            y = addText(`Project Area: ${area} hectares`, margin, y, 10);
+            y = addText(`Bioregion Multiplier: ${currentMultiplier}x${selectedBioregion ? ` (${selectedBioregion})` : ''}`, margin, y, 10);
             y = addText(`Estimated Total Cost: $${Math.round(totalBudget).toLocaleString()}`, margin, y, 12);
             y += 6;
             
             // 9. Milestones
             y = checkPage(y, 25);
-            y = addHeading('9. Project Milestones', y, 1);
+            y = addHeading('9. Project Milestones', y, 14);
+            y = addDivider(y);
             doc.setFontSize(10);
             milestones.forEach(m => {
                 y = addText(`• ${sanitize(m.name)}${m.date ? ` (${m.date})` : ''}`, margin + 5, y, 9);
                 y = checkPage(y, 15);
             });
+            y += 4;
             
-            // Footer on all pages
+            // 10. Legislation Summary
+            y = checkPage(y, 25);
+            y = addHeading('10. Tasmanian Legislation Summary', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(9);
+            TAS_LEGISLATION_SUMMARY.slice(0, 5).forEach(leg => {
+                y = addText(`• ${leg.name}: ${leg.description.substring(0, 60)}...`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            y += 4;
+            
+            // ===== APPLY FOOTERS =====
             const totalPages = doc.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 doc.setPage(i);
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
-                doc.text(`Tasmanian EIA Report - Page ${i} of ${totalPages} - Preliminary Assessment Only`, margin, doc.internal.pageSize.height - 10);
+                doc.setFont('helvetica', 'normal');
+                const footerText = `Tasmanian EIA Report - Page ${i} of ${totalPages} - Professional Assessment`;
+                doc.text(footerText, margin, doc.internal.pageSize.height - 10);
             }
             
             const filename = `Tasmania_EIA_Report_${sanitize(document.getElementById('project-name').value || 'project')}_${new Date().toISOString().slice(0,10)}.pdf`;
