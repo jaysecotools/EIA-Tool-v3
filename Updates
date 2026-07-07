@@ -12,8 +12,6 @@
     <!-- Leaflet for mapping -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
-    <script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
     
     <style>
         * {
@@ -602,6 +600,8 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             margin: 0.5rem 0 1rem 0;
+            background: #f0f0f0;
+            z-index: 1;
         }
 
         .map-controls {
@@ -615,6 +615,11 @@
             flex: 0 1 auto;
         }
 
+        .map-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
         .map-coords {
             font-size: 0.8rem;
             color: var(--text-gray);
@@ -622,6 +627,11 @@
             padding: 0.5rem;
             background: #f9fafb;
             border-radius: 6px;
+        }
+
+        /* Leaflet control geocoder fix */
+        .leaflet-control-geocoder {
+            z-index: 1000;
         }
 
         @media (max-width: 768px) {
@@ -649,6 +659,12 @@
             }
             #map-container {
                 height: 350px;
+            }
+            .map-controls {
+                flex-direction: column;
+            }
+            .map-controls input[type="text"] {
+                width: 100%;
             }
         }
     </style>
@@ -1288,67 +1304,97 @@
             renderCompliance();
             
             // Initialize map after a small delay to ensure DOM is ready
-            setTimeout(initMap, 500);
+            setTimeout(initMap, 800);
             
             setInterval(saveToLocalStorage, 30000);
             showNotification('Tasmanian EIA Tool Ready', 'success');
         });
 
         // ============================================
-        // MAP FUNCTIONS
+        // MAP FUNCTIONS - FIXED
         // ============================================
         function initMap() {
             if (mapInitialized) return;
             
             const container = document.getElementById('map-container');
-            if (!container) return;
+            if (!container) {
+                console.error('Map container not found');
+                return;
+            }
             
-            // Default to Tasmania center
-            const defaultLat = -42.0;
-            const defaultLng = 146.5;
+            // Check if container is visible
+            if (container.offsetParent === null) {
+                // Container is hidden, wait and retry
+                setTimeout(initMap, 500);
+                return;
+            }
             
-            map = L.map('map-container').setView([defaultLat, defaultLng], 7);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-            
-            // Click to drop marker
-            map.on('click', function(e) {
-                const lat = e.latlng.lat;
-                const lng = e.latlng.lng;
-                setMarker(lat, lng);
-                // Reverse geocode
-                reverseGeocode(lat, lng);
-            });
-            
-            mapInitialized = true;
-            
-            // Load saved marker from localStorage
-            const savedMarker = localStorage.getItem('eia_map_marker');
-            if (savedMarker) {
-                try {
-                    const data = JSON.parse(savedMarker);
-                    if (data.lat && data.lng) {
-                        setMarker(data.lat, data.lng);
-                        if (data.address) {
-                            markerAddress = data.address;
-                            document.getElementById('address-display').textContent = data.address;
+            try {
+                // Default to Tasmania center
+                const defaultLat = -42.0;
+                const defaultLng = 146.5;
+                
+                map = L.map('map-container', {
+                    center: [defaultLat, defaultLng],
+                    zoom: 7,
+                    zoomControl: true
+                });
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Click to drop marker
+                map.on('click', function(e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng);
+                });
+                
+                mapInitialized = true;
+                
+                // Load saved marker from localStorage
+                const savedMarker = localStorage.getItem('eia_map_marker');
+                if (savedMarker) {
+                    try {
+                        const data = JSON.parse(savedMarker);
+                        if (data.lat && data.lng) {
+                            setTimeout(() => {
+                                setMarker(data.lat, data.lng);
+                                if (data.address) {
+                                    markerAddress = data.address;
+                                    document.getElementById('address-display').textContent = data.address;
+                                }
+                                if (data.address) {
+                                    document.getElementById('location').value = data.address;
+                                } else if (data.lat && data.lng) {
+                                    document.getElementById('location').value = `${data.lat}, ${data.lng}`;
+                                }
+                            }, 300);
                         }
-                        // Update location field
-                        if (data.address) {
-                            document.getElementById('location').value = data.address;
-                        } else if (data.lat && data.lng) {
-                            document.getElementById('location').value = `${data.lat}, ${data.lng}`;
-                        }
+                    } catch(e) {
+                        console.error('Error loading saved marker:', e);
                     }
-                } catch(e) {}
+                }
+                
+                // Force a resize after a moment
+                setTimeout(() => {
+                    if (map) map.invalidateSize();
+                }, 500);
+                
+                console.log('Map initialized successfully');
+            } catch (e) {
+                console.error('Error initializing map:', e);
             }
         }
 
         function setMarker(lat, lng) {
-            if (!map) return;
+            if (!map) {
+                console.error('Map not initialized');
+                return;
+            }
             
             markerLat = lat;
             markerLng = lng;
@@ -1378,7 +1424,6 @@
         function updateCoordDisplay() {
             if (markerLat !== null && markerLng !== null) {
                 document.getElementById('coord-display').textContent = `${markerLat.toFixed(6)}, ${markerLng.toFixed(6)}`;
-                // Update location field
                 const address = document.getElementById('address-display').textContent;
                 if (address && address !== 'None') {
                     document.getElementById('location').value = address;
@@ -1412,6 +1457,7 @@
                 return;
             }
             
+            showNotification('Searching...', 'info');
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
             fetch(url)
                 .then(response => response.json())
@@ -1458,7 +1504,10 @@
         }
 
         function dropMarkerAtCenter() {
-            if (!map) return;
+            if (!map) {
+                showNotification('Map not initialized', 'error');
+                return;
+            }
             const center = map.getCenter();
             setMarker(center.lat, center.lng);
             reverseGeocode(center.lat, center.lng);
@@ -2078,17 +2127,6 @@
                     const br = TAS_BIOREGIONS.find(b => b.name === data.selectedBioregion);
                     if (br) selectBioregion(br.name, br.multiplier);
                 }
-                // Load map data
-                if (data.mapData && data.mapData.lat && data.mapData.lng) {
-                    setTimeout(() => {
-                        setMarker(data.mapData.lat, data.mapData.lng);
-                        if (data.mapData.address) {
-                            markerAddress = data.mapData.address;
-                            document.getElementById('address-display').textContent = data.mapData.address;
-                            document.getElementById('location').value = data.mapData.address;
-                        }
-                    }, 800);
-                }
                 renderStakeholders();
                 renderTimeline();
                 updateAllCalculations();
@@ -2251,26 +2289,48 @@
                 y = addText(`Address: ${sanitize(mapData.address || 'Location on map')}`, margin, y, 11);
                 y += 8;
                 
-                // Draw a simple map representation
+                // Draw a professional map representation with a marker
                 doc.setDrawColor(200, 200, 200);
                 doc.setFillColor(240, 248, 240);
-                doc.rect(margin, y, pageWidth - margin * 2, 80, 'FD');
+                doc.rect(margin, y, pageWidth - margin * 2, 90, 'FD');
                 doc.setDrawColor(30, 90, 62);
                 doc.setLineWidth(1);
-                doc.rect(margin, y, pageWidth - margin * 2, 80);
+                doc.rect(margin, y, pageWidth - margin * 2, 90);
                 
-                // Draw a marker symbol
+                // Draw a crosshair/grid pattern
+                doc.setDrawColor(200, 200, 200);
+                doc.setLineWidth(0.3);
+                const centerX = pageWidth / 2;
+                const centerY = y + 45;
+                // Grid lines
+                for (let i = -3; i <= 3; i++) {
+                    doc.line(centerX + i * 20, centerY - 30, centerX + i * 20, centerY + 30);
+                    doc.line(centerX - 30, centerY + i * 20, centerX + 30, centerY + i * 20);
+                }
+                
+                // Draw marker
                 doc.setFillColor(200, 50, 50);
-                doc.circle(pageWidth / 2, y + 40, 6, 'F');
+                doc.circle(centerX, centerY, 8, 'F');
                 doc.setFillColor(255, 255, 255);
-                doc.circle(pageWidth / 2, y + 40, 3, 'F');
+                doc.circle(centerX, centerY, 4, 'F');
+                
+                // Draw a pin shape
+                doc.setDrawColor(200, 50, 50);
+                doc.setLineWidth(1);
+                doc.line(centerX, centerY + 8, centerX, centerY + 25);
+                doc.setFillColor(200, 50, 50);
+                doc.triangle(centerX - 4, centerY + 25, centerX + 4, centerY + 25, centerX, centerY + 32, 'F');
                 
                 // Label
                 doc.setFontSize(9);
                 doc.setTextColor(60, 60, 60);
-                doc.text('● Project Location (approximate)', pageWidth / 2 - 40, y + 70);
+                doc.setFont('helvetica', 'bold');
+                doc.text('● Project Location', centerX - 25, y + 78);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text('(approximate position)', centerX - 22, y + 86);
                 
-                y += 90;
+                y += 100;
                 
                 // Add map disclaimer
                 doc.setFontSize(8);
