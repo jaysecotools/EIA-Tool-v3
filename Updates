@@ -40,7 +40,6 @@
             line-height: 1.5;
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white;
@@ -88,14 +87,12 @@
             margin-top: 0.5rem;
         }
 
-        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
         }
 
-        /* Cards */
         .card {
             background: var(--white);
             border-radius: 12px;
@@ -142,7 +139,6 @@
             display: none;
         }
 
-        /* Forms */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -180,7 +176,6 @@
             box-shadow: 0 0 0 3px rgba(42, 111, 75, 0.1);
         }
 
-        /* Sliders */
         .slider-group {
             margin-bottom: 1rem;
             border-bottom: 1px solid #f0f0f0;
@@ -193,7 +188,7 @@
         .slider-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
 
         .slider-criteria {
@@ -201,6 +196,17 @@
             color: var(--text-gray);
             margin-top: 0.2rem;
             font-style: italic;
+        }
+
+        .slider-result-indicator {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 12px;
+            background: #f0f0f0;
+            color: var(--text-gray);
+            transition: all 0.2s;
         }
 
         input[type="range"] {
@@ -231,7 +237,6 @@
             font-size: 0.75rem;
         }
 
-        /* Buttons */
         .btn {
             padding: 0.625rem 1.25rem;
             border: none;
@@ -277,7 +282,6 @@
             flex-wrap: wrap;
         }
 
-        /* Risk Level */
         .risk-display {
             text-align: center;
             padding: 1rem;
@@ -302,7 +306,6 @@
             color: #721c24;
         }
 
-        /* Progress Bar */
         .progress-container {
             background: var(--border);
             border-radius: 20px;
@@ -323,7 +326,6 @@
             transition: width 0.3s;
         }
 
-        /* Recommendations */
         .recommendation-item {
             padding: 0.75rem;
             margin-bottom: 0.5rem;
@@ -346,7 +348,6 @@
             border-left-color: var(--primary-light);
         }
 
-        /* Charts */
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -362,7 +363,6 @@
             max-width: 100%;
         }
 
-        /* Timeline */
         .timeline-item {
             display: flex;
             align-items: center;
@@ -381,7 +381,6 @@
             font-size: 0.875rem;
         }
 
-        /* Stakeholder Grid */
         .stakeholder-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -424,7 +423,6 @@
             color: #004085;
         }
 
-        /* Activities List */
         .activities-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -446,7 +444,6 @@
             display: none;
         }
 
-        /* Budget */
         .budget-item {
             display: flex;
             justify-content: space-between;
@@ -464,7 +461,6 @@
             font-size: 1.125rem;
         }
 
-        /* Compliance */
         .compliance-item {
             display: flex;
             justify-content: space-between;
@@ -515,7 +511,6 @@
             text-decoration: underline;
         }
 
-        /* Tasmania Bioregion Selector */
         .bioregion-grid {
             display: flex;
             flex-wrap: wrap;
@@ -544,7 +539,6 @@
             border-color: var(--primary);
         }
 
-        /* Offsets Result */
         .offsets-result {
             background: linear-gradient(135deg, var(--bg-light), white);
             padding: 1rem;
@@ -552,7 +546,6 @@
             margin-top: 1rem;
         }
 
-        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
@@ -578,7 +571,6 @@
             }
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 1.5rem;
@@ -596,33 +588,26 @@
             margin-top: 1rem;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
             }
-            
             .form-grid {
                 grid-template-columns: 1fr;
             }
-            
             .charts-grid {
                 grid-template-columns: 1fr;
             }
-            
             .chart-container {
                 height: 280px;
             }
-            
             .timeline-item {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
             .btn-group {
                 flex-direction: column;
             }
-            
             .btn {
                 width: 100%;
             }
@@ -637,10 +622,6 @@
     </div>
 
     <div class="container">
-        <!-- ============================================ -->
-        <!-- ORIGINAL CARDS - FULLY PRESERVED             -->
-        <!-- ============================================ -->
-
         <!-- Project Details Card -->
         <div class="card">
             <div class="card-header" onclick="toggleCard(this)">
@@ -834,7 +815,7 @@
             </div>
         </div>
 
-        <!-- Policy Compliance Card - FULLY POPULATED -->
+        <!-- Policy Compliance Card -->
         <div class="card">
             <div class="card-header" onclick="toggleCard(this)">
                 <h2>✅ Policy & Regulatory Compliance</h2>
@@ -968,10 +949,6 @@
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- NEW TASMANIA-SPECIFIC CARDS (ADDED)         -->
-        <!-- ============================================ -->
-
         <!-- Tasmania Bioregion Selection Card -->
         <div class="card">
             <div class="card-header" onclick="toggleCard(this)">
@@ -1056,10 +1033,9 @@
 
     <script>
         // ============================================
-        // ORIGINAL JAVASCRIPT - FULLY PRESERVED
+        // CONFIGURATION & DATA
         // ============================================
         
-        // Risk metrics configuration
         const RISK_METRICS = [
             { id: "erosion", label: "🌊 Erosion Impact", weight: 0.15 },
             { id: "vegetation", label: "🌿 Vegetation Damage", weight: 0.15 },
@@ -1071,8 +1047,74 @@
             { id: "biodiversity", label: "🐾 Biodiversity Loss", weight: 0.08 },
             { id: "carbon", label: "🌍 Carbon Footprint", weight: 0.08 }
         ];
-        
-        // All activities
+
+        // Detailed result indicators for each slider value
+        const RESULT_INDICATORS = {
+            erosion: [
+                { max: 20, label: "Stable", color: "#28a745" },
+                { max: 40, label: "Minor Rills", color: "#8bc34a" },
+                { max: 60, label: "Gully Forming", color: "#ffc107" },
+                { max: 80, label: "Active Erosion", color: "#fd7e14" },
+                { max: 100, label: "Severe Gully", color: "#dc3545" }
+            ],
+            vegetation: [
+                { max: 20, label: "Intact", color: "#28a745" },
+                { max: 40, label: "Minor Damage", color: "#8bc34a" },
+                { max: 60, label: "Moderate Loss", color: "#ffc107" },
+                { max: 80, label: "Major Loss", color: "#fd7e14" },
+                { max: 100, label: "Complete Loss", color: "#dc3545" }
+            ],
+            "water-quality": [
+                { max: 20, label: "Pristine", color: "#28a745" },
+                { max: 40, label: "Slightly Turbid", color: "#8bc34a" },
+                { max: 60, label: "Moderate Pollution", color: "#ffc107" },
+                { max: 80, label: "Heavy Pollution", color: "#fd7e14" },
+                { max: 100, label: "Toxic/Dead", color: "#dc3545" }
+            ],
+            habitat: [
+                { max: 20, label: "Intact", color: "#28a745" },
+                { max: 40, label: "Fragmented", color: "#8bc34a" },
+                { max: 60, label: "Degraded", color: "#ffc107" },
+                { max: 80, label: "Severely Degraded", color: "#fd7e14" },
+                { max: 100, label: "Destroyed", color: "#dc3545" }
+            ],
+            "air-quality": [
+                { max: 20, label: "Clean", color: "#28a745" },
+                { max: 40, label: "Slight Haze", color: "#8bc34a" },
+                { max: 60, label: "Moderate Smog", color: "#ffc107" },
+                { max: 80, label: "Heavy Smog", color: "#fd7e14" },
+                { max: 100, label: "Toxic Air", color: "#dc3545" }
+            ],
+            noise: [
+                { max: 20, label: "Ambient", color: "#28a745" },
+                { max: 40, label: "Noticeable", color: "#8bc34a" },
+                { max: 60, label: "Disruptive", color: "#ffc107" },
+                { max: 80, label: "Very Loud", color: "#fd7e14" },
+                { max: 100, label: "Dangerous", color: "#dc3545" }
+            ],
+            waste: [
+                { max: 20, label: "Minimal", color: "#28a745" },
+                { max: 40, label: "Controlled", color: "#8bc34a" },
+                { max: 60, label: "Excessive", color: "#ffc107" },
+                { max: 80, label: "Hazardous", color: "#fd7e14" },
+                { max: 100, label: "Toxic Dump", color: "#dc3545" }
+            ],
+            biodiversity: [
+                { max: 20, label: "Healthy", color: "#28a745" },
+                { max: 40, label: "Slightly Impacted", color: "#8bc34a" },
+                { max: 60, label: "Declining", color: "#ffc107" },
+                { max: 80, label: "Collapsing", color: "#fd7e14" },
+                { max: 100, label: "Extinct", color: "#dc3545" }
+            ],
+            carbon: [
+                { max: 20, label: "Net Zero", color: "#28a745" },
+                { max: 40, label: "Low", color: "#8bc34a" },
+                { max: 60, label: "Moderate", color: "#ffc107" },
+                { max: 80, label: "High", color: "#fd7e14" },
+                { max: 100, label: "Extreme", color: "#dc3545" }
+            ]
+        };
+
         const ALL_ACTIVITIES = [
             "🌱 Invasive Species Control", "🌳 Revegetation", "🧱 Erosion Control Structures",
             "💧 Waterway Restoration", "🦜 Wildlife Habitat Creation", "🐛 Pest Management",
@@ -1082,128 +1124,26 @@
             "♻️ Waste Reduction", "👥 Community Engagement", "🌡️ Climate Adaptation",
             "🌊 Riparian Buffer Zones", "🏔️ Integrated Coastal Management", "📊 Ecosystem Monitoring"
         ];
-        
-        // Comprehensive Policy Compliance Data - Fully Populated with Real Regulations
+
         const POLICIES = [
-            { 
-                name: "Clean Water Act (CWA)", 
-                description: "Regulates discharge of pollutants into water bodies",
-                status: "Compliant", 
-                reference: "https://www.epa.gov/cwa-404",
-                criteria: ["water-quality"]
-            },
-            { 
-                name: "Endangered Species Act (ESA)", 
-                description: "Protects threatened and endangered species and their habitats",
-                status: "Partial", 
-                reference: "https://www.fws.gov/endangered/esa-library/index.html",
-                criteria: ["biodiversity", "habitat"]
-            },
-            { 
-                name: "Clean Air Act (CAA)", 
-                description: "Regulates air emissions from stationary and mobile sources",
-                status: "Compliant", 
-                reference: "https://www.epa.gov/clean-air-act-overview",
-                criteria: ["air-quality"]
-            },
-            { 
-                name: "Resource Conservation and Recovery Act (RCRA)", 
-                description: "Governs management of hazardous and non-hazardous waste",
-                status: "Needs Review", 
-                reference: "https://www.epa.gov/rcra",
-                criteria: ["waste"]
-            },
-            { 
-                name: "National Environmental Policy Act (NEPA)", 
-                description: "Requires environmental impact assessments for federal projects",
-                status: "Compliant", 
-                reference: "https://www.epa.gov/nepa",
-                criteria: []
-            },
-            { 
-                name: "Migratory Bird Treaty Act (MBTA)", 
-                description: "Protects migratory bird species and their habitats",
-                status: "Partial", 
-                reference: "https://www.fws.gov/law/migratory-bird-treaty-act-1918",
-                criteria: ["habitat", "biodiversity"]
-            },
-            { 
-                name: "Wetlands Protection Regulations", 
-                description: "Protects wetlands from development and degradation",
-                status: "Partial", 
-                reference: "https://www.epa.gov/wetlands",
-                criteria: ["habitat", "water-quality"]
-            },
-            { 
-                name: "Coastal Zone Management Act (CZMA)", 
-                description: "Protects coastal resources and manages development",
-                status: "Not Applicable", 
-                reference: "https://coast.noaa.gov/czm/act/",
-                criteria: []
-            },
-            { 
-                name: "Noise Control Act", 
-                description: "Regulates noise pollution and establishes noise emission standards",
-                status: "Compliant", 
-                reference: "https://www.epa.gov/clean-air-act-overview/noise-pollution",
-                criteria: ["noise"]
-            },
-            { 
-                name: "Soil Conservation and Protection Standards", 
-                description: "Promotes soil conservation practices and erosion control",
-                status: "Partial", 
-                reference: "https://www.nrcs.usda.gov/",
-                criteria: ["erosion"]
-            },
-            { 
-                name: "Carbon Emission Reduction Targets (Paris Agreement)", 
-                description: "International commitment to reduce greenhouse gas emissions",
-                status: "In Progress", 
-                reference: "https://unfccc.int/process-and-meetings/the-paris-agreement",
-                criteria: ["carbon"]
-            },
-            { 
-                name: "Biodiversity Action Plan", 
-                description: "Strategy for preserving and enhancing biodiversity",
-                status: "Needs Review", 
-                reference: "https://www.cbd.int/nbsap/",
-                criteria: ["biodiversity"]
-            },
-            { 
-                name: "Sustainable Development Goals (SDG) - Environmental", 
-                description: "UN goals for sustainable environmental practices",
-                status: "Compliant", 
-                reference: "https://sdgs.un.org/goals",
-                criteria: []
-            },
-            { 
-                name: "Local Zoning and Land Use Regulations", 
-                description: "Local ordinances governing land development and use",
-                status: "Compliant", 
-                reference: "#",
-                criteria: []
-            },
-            { 
-                name: "Stormwater Management Requirements", 
-                description: "Regulations for managing stormwater runoff",
-                status: "Partial", 
-                reference: "https://www.epa.gov/npdes/stormwater-discharges-municipal-sources",
-                criteria: ["water-quality"]
-            },
-            { 
-                name: "Environmental Justice Executive Order", 
-                description: "Ensures fair treatment of all communities regarding environmental impacts",
-                status: "Compliant", 
-                reference: "https://www.epa.gov/environmentaljustice",
-                criteria: []
-            }
+            { name: "Clean Water Act (CWA)", description: "Regulates discharge of pollutants into water bodies", status: "Compliant", reference: "https://www.epa.gov/cwa-404", criteria: ["water-quality"] },
+            { name: "Endangered Species Act (ESA)", description: "Protects threatened and endangered species and their habitats", status: "Partial", reference: "https://www.fws.gov/endangered/esa-library/index.html", criteria: ["biodiversity", "habitat"] },
+            { name: "Clean Air Act (CAA)", description: "Regulates air emissions from stationary and mobile sources", status: "Compliant", reference: "https://www.epa.gov/clean-air-act-overview", criteria: ["air-quality"] },
+            { name: "Resource Conservation and Recovery Act (RCRA)", description: "Governs management of hazardous and non-hazardous waste", status: "Needs Review", reference: "https://www.epa.gov/rcra", criteria: ["waste"] },
+            { name: "National Environmental Policy Act (NEPA)", description: "Requires environmental impact assessments for federal projects", status: "Compliant", reference: "https://www.epa.gov/nepa", criteria: [] },
+            { name: "Migratory Bird Treaty Act (MBTA)", description: "Protects migratory bird species and their habitats", status: "Partial", reference: "https://www.fws.gov/law/migratory-bird-treaty-act-1918", criteria: ["habitat", "biodiversity"] },
+            { name: "Wetlands Protection Regulations", description: "Protects wetlands from development and degradation", status: "Partial", reference: "https://www.epa.gov/wetlands", criteria: ["habitat", "water-quality"] },
+            { name: "Coastal Zone Management Act (CZMA)", description: "Protects coastal resources and manages development", status: "Not Applicable", reference: "https://coast.noaa.gov/czm/act/", criteria: [] },
+            { name: "Noise Control Act", description: "Regulates noise pollution and establishes noise emission standards", status: "Compliant", reference: "https://www.epa.gov/clean-air-act-overview/noise-pollution", criteria: ["noise"] },
+            { name: "Soil Conservation and Protection Standards", description: "Promotes soil conservation practices and erosion control", status: "Partial", reference: "https://www.nrcs.usda.gov/", criteria: ["erosion"] },
+            { name: "Carbon Emission Reduction Targets (Paris Agreement)", description: "International commitment to reduce greenhouse gas emissions", status: "In Progress", reference: "https://unfccc.int/process-and-meetings/the-paris-agreement", criteria: ["carbon"] },
+            { name: "Biodiversity Action Plan", description: "Strategy for preserving and enhancing biodiversity", status: "Needs Review", reference: "https://www.cbd.int/nbsap/", criteria: ["biodiversity"] },
+            { name: "Sustainable Development Goals (SDG) - Environmental", description: "UN goals for sustainable environmental practices", status: "Compliant", reference: "https://sdgs.un.org/goals", criteria: [] },
+            { name: "Local Zoning and Land Use Regulations", description: "Local ordinances governing land development and use", status: "Compliant", reference: "#", criteria: [] },
+            { name: "Stormwater Management Requirements", description: "Regulations for managing stormwater runoff", status: "Partial", reference: "https://www.epa.gov/npdes/stormwater-discharges-municipal-sources", criteria: ["water-quality"] },
+            { name: "Environmental Justice Executive Order", description: "Ensures fair treatment of all communities regarding environmental impacts", status: "Compliant", reference: "https://www.epa.gov/environmentaljustice", criteria: [] }
         ];
-        
-        // ============================================
-        // NEW TASMANIA-SPECIFIC DATA
-        // ============================================
-        
-        // Tasmanian Bioregions with risk multipliers
+
         const TAS_BIOREGIONS = [
             { name: "King Island", multiplier: 1.3, description: "Island ecosystems, high endemism, seabird colonies" },
             { name: "Furneaux Group", multiplier: 1.3, description: "Island group, significant seabird and shorebird habitat" },
@@ -1215,8 +1155,7 @@
             { name: "Southern Ranges", multiplier: 1.3, description: "Tall wet forests, threatened species habitat" },
             { name: "South East", multiplier: 1.1, description: "Urban fringe, coastal development pressure" }
         ];
-        
-        // Tasmanian Legislation for summary
+
         const TAS_LEGISLATION_SUMMARY = [
             { name: "EMPC Act 1994", description: "Environmental Management and Pollution Control Act - Primary environmental legislation governing pollution, waste, and environmental harm" },
             { name: "TSP Act 1995", description: "Threatened Species Protection Act - Protects listed threatened species and their habitats" },
@@ -1226,8 +1165,10 @@
             { name: "Aboriginal Heritage Act 1975", description: "Protects Aboriginal cultural heritage sites and artefacts" },
             { name: "Nature Conservation Act 2002", description: "Protects reserved lands, parks, and wildlife" }
         ];
-        
-        // Global state
+
+        // ============================================
+        // STATE
+        // ============================================
         let stakeholders = [];
         let milestones = [
             { name: "📋 Initial Site Assessment", date: "", editable: false },
@@ -1239,12 +1180,12 @@
         let previousRiskData = null;
         let radarChart = null;
         let barChart = null;
-        
-        // Tasmania-specific variables
         let selectedBioregion = null;
         let currentMultiplier = 1.0;
-        
-        // Initialize on page load
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
             initializeRiskSliders();
             initializeActivities();
@@ -1253,220 +1194,48 @@
             initializeCharts();
             loadSavedData();
             updateAllCalculations();
-            
-            // Initialize Tasmania-specific features
             initializeBioregions();
             initializeTasLegislationSummary();
-            
-            // Set default date
             document.getElementById('assessment-date').valueAsDate = new Date();
             
-            // Add event listeners
             RISK_METRICS.forEach(metric => {
                 const slider = document.getElementById(`slider-${metric.id}`);
                 if (slider) {
                     slider.addEventListener('input', () => {
-                        document.getElementById(`value-${metric.id}`).textContent = slider.value;
+                        const val = parseInt(slider.value);
+                        document.getElementById(`value-${metric.id}`).textContent = val;
+                        updateResultIndicator(metric.id, val);
                         updateAllCalculations();
-                        updateEPBCReferral(); // Update EPBC check when risks change
+                        updateEPBCReferral();
                     });
                 }
             });
             
             document.getElementById('project-area').addEventListener('input', () => updateBudget());
-            
             renderTimeline();
             renderStakeholders();
             renderRiskComparison();
             renderProjections();
             renderCompliance();
-            
-            // Auto-save interval
             setInterval(saveToLocalStorage, 30000);
-            
-            showNotification('Tasmanian EIA Tool Ready - Bioregion selector added', 'success');
+            showNotification('Tasmanian EIA Tool Ready', 'success');
         });
-        
+
         // ============================================
-        // NEW TASMANIA-SPECIFIC FUNCTIONS
+        // RISK SLIDERS WITH RESULT INDICATORS
         // ============================================
-        
-        function initializeBioregions() {
-            const container = document.getElementById('bioregion-container');
-            container.innerHTML = TAS_BIOREGIONS.map(b => `
-                <button class="bioregion-btn" onclick="selectBioregion('${b.name}', ${b.multiplier})">
-                    ${b.name} <span style="font-size: 0.7rem;">(${b.multiplier}x)</span>
-                </button>
-            `).join('');
-        }
-        
-        function selectBioregion(name, multiplier) {
-            selectedBioregion = name;
-            currentMultiplier = multiplier;
-            
-            // Update UI
-            document.querySelectorAll('.bioregion-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.textContent.includes(name)) {
-                    btn.classList.add('selected');
-                }
-            });
-            
-            const bioregionInfo = TAS_BIOREGIONS.find(b => b.name === name);
-            document.getElementById('selected-bioregion-info').innerHTML = `✓ Selected: ${name} - Risk multiplier: ${multiplier}x applied to budget and risk weighting`;
-            document.getElementById('bioregion-risk-impact').innerHTML = `<span style="color: var(--warning);">⚠️ ${bioregionInfo.description} - Enhanced mitigation may be required.</span>`;
-            
-            // Recalculate everything with new multiplier
-            updateAllCalculations();
-            updateEPBCReferral();
-            showNotification(`Bioregion set to ${name} (${multiplier}x risk multiplier)`, 'success');
-        }
-        
-        function updateEPBCReferral() {
-            const container = document.getElementById('epbc-container');
-            if (!container) return;
-            
-            const riskScore = calculateTotalRisk();
-            const biodiversityRisk = parseFloat(document.getElementById(`slider-biodiversity`)?.value) || 0;
-            const habitatRisk = parseFloat(document.getElementById(`slider-habitat`)?.value) || 0;
-            const vegetationRisk = parseFloat(document.getElementById(`slider-vegetation`)?.value) || 0;
-            
-            let needsReferral = false;
-            let reasons = [];
-            
-            if (biodiversityRisk > 60 || habitatRisk > 60) {
-                needsReferral = true;
-                reasons.push('Threatened species/ habitat impact exceeds threshold');
-            }
-            if (vegetationRisk > 70) {
-                needsReferral = true;
-                reasons.push('Significant native vegetation clearance');
-            }
-            if (riskScore > 70 && selectedBioregion && (selectedBioregion === 'Central Highlands' || selectedBioregion === 'West Coast')) {
-                needsReferral = true;
-                reasons.push('High risk in high-conservation bioregion');
-            }
-            
-            if (needsReferral) {
-                container.innerHTML = `
-                    <div style="padding: 1rem; background: #f8d7da; border-radius: 8px; border-left: 4px solid var(--danger);">
-                        <strong style="color: var(--danger);">⚠️ EPBC ACT REFERRAL LIKELY REQUIRED</strong>
-                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">This project may impact Matters of National Environmental Significance (MNES).</p>
-                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Reasons: ${reasons.join('; ')}</p>
-                        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Contact: Department of Climate Change, Energy, the Environment and Water<br>Referral portal: https://epbcreferrals.awe.gov.au</p>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div style="padding: 1rem; background: #d4edda; border-radius: 8px; border-left: 4px solid var(--success);">
-                        <strong style="color: var(--success);">✓ EPBC Act Referral Not Indicated</strong>
-                        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Based on current assessment, an EPBC Act referral does not appear to be required.</p>
-                        <p style="margin-top: 0.5rem; font-size: 0.75rem;">Note: Final determination requires professional ecological advice. Review MNES checklist to confirm.</p>
-                    </div>
-                `;
-            }
-        }
-        
-        function calculateOffsets() {
-            const area = parseFloat(document.getElementById('clear-area').value) || 0;
-            const vegType = document.getElementById('veg-type').value;
-            const threatenedFactor = parseFloat(document.getElementById('threatened-species-select').value);
-            
-            let multiplier = 1;
-            let vegDescription = '';
-            switch(vegType) {
-                case 'low': multiplier = 2; vegDescription = 'Low Conservation Value'; break;
-                case 'medium': multiplier = 5; vegDescription = 'Medium Conservation Value'; break;
-                case 'high': multiplier = 10; vegDescription = 'High Conservation Value'; break;
-                case 'critical': multiplier = 15; vegDescription = 'Critical / TEC'; break;
-                default: multiplier = 2;
-            }
-            
-            // Apply bioregion multiplier if selected
-            const bioregionMultiplier = currentMultiplier;
-            const totalMultiplier = multiplier * (1 + threatenedFactor) * bioregionMultiplier;
-            const offsetHectares = area * totalMultiplier;
-            const estimatedCost = offsetHectares * 25000;
-            
-            const result = document.getElementById('offsets-result');
-            result.style.display = 'block';
-            result.innerHTML = `
-                <div class="offsets-result">
-                    <h4 style="color: var(--primary); margin-bottom: 1rem;">📊 Biodiversity Offsets Calculation (Tasmanian Policy)</h4>
-                    <div style="display: grid; gap: 0.75rem;">
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><strong>Area to be cleared:</strong> <span>${area.toFixed(2)} hectares</span></div>
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><strong>Vegetation type:</strong> <span>${vegDescription}</span></div>
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><strong>Base multiplier:</strong> <span>${multiplier}:1</span></div>
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><strong>Threatened species factor:</strong> <span>+${(threatenedFactor * 100)}%</span></div>
-                        ${selectedBioregion ? `<div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><strong>Bioregion multiplier:</strong> <span>${currentMultiplier}x (${selectedBioregion})</span></div>` : ''}
-                        <div style="padding-top: 0.75rem; border-top: 2px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; font-weight: bold;"><span>Total offset required:</span> <span style="color: var(--primary);">${offsetHectares.toFixed(2)} hectares</span></div>
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap;"><span>Estimated offset cost:</span> <span>$${estimatedCost.toLocaleString()}</span></div>
-                    </div>
-                    <p style="margin-top: 1rem; font-size: 0.7rem; color: var(--text-gray);">* Based on Tasmanian Biodiversity Offsets Policy (DPIPWE). Final determination requires formal assessment and approval.</p>
-                </div>
-            `;
-            showNotification('Offsets calculation complete', 'success');
-        }
-        
-        function initializeTasLegislationSummary() {
-            const container = document.getElementById('tas-legislation-summary');
-            container.innerHTML = `
-                <div class="form-grid">
-                    ${TAS_LEGISLATION_SUMMARY.map(leg => `
-                        <div style="padding: 0.75rem; background: #f9fafb; border-radius: 8px; border-left: 3px solid var(--primary);">
-                            <strong style="color: var(--primary-dark);">${leg.name}</strong>
-                            <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 0.25rem;">${leg.description}</p>
-                        </div>
-                    `).join('')}
-                </div>
-                <p style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-gray);">Refer to DPIPWE for formal interpretation and compliance requirements.</p>
-            `;
-        }
-        
-        // Modified updateBudget to include bioregion multiplier
-        const originalUpdateBudget = updateBudget;
-        function updateBudget() {
-            const area = parseFloat(document.getElementById('project-area')?.value) || 1;
-            let total = 0;
-            let items = [];
-            
-            RISK_METRICS.forEach(metric => {
-                const value = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                const cost = value * 75 * area * currentMultiplier;
-                total += cost;
-                if (value > 0) {
-                    items.push(`<div class="budget-item"><span>${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()}</span><span>$${Math.round(cost).toLocaleString()}</span></div>`);
-                }
-            });
-            
-            const container = document.getElementById('budget-container');
-            container.innerHTML = `
-                ${items.length > 0 ? items.join('') : '<p style="color: var(--text-gray);">Adjust risk sliders to see cost estimates</p>'}
-                <div class="budget-total">
-                    <span>Total Estimated Cost:</span>
-                    <span style="color: var(--primary);">$${Math.round(total).toLocaleString()}</span>
-                </div>
-                <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 0.5rem;">* Based on ${area} hectare(s), risk levels${selectedBioregion ? `, and ${selectedBioregion} bioregion multiplier (${currentMultiplier}x)` : ''}</p>
-            `;
-        }
-        
-        // ============================================
-        // ORIGINAL FUNCTIONS - FULLY PRESERVED
-        // ============================================
-        
-        // Initialize risk sliders with objective criteria
         function initializeRiskSliders() {
             const container = document.getElementById('risk-sliders-container');
             const criteriaMap = {
-                erosion: "0: No visible erosion, stable soils | 100: Active gully erosion, major sediment loss",
-                vegetation: "0: Intact native vegetation, no damage | 100: Complete vegetation loss, severe fragmentation",
-                "water-quality": "0: Clear water, no pollutants | 100: Heavy contamination, visible oil/sheen",
-                habitat: "0: Intact habitat, no disturbance | 100: Total habitat destruction, species extirpation",
-                "air-quality": "0: Clean air, no emissions | 100: Heavy particulate matter, visible smog",
-                noise: "0: Ambient noise, no disturbance | 100: Extreme noise, hearing damage risk",
-                waste: "0: No waste generation | 100: Massive unmanaged waste, hazardous materials",
-                biodiversity: "0: Healthy ecosystem, all species present | 100: Severe biodiversity collapse",
-                carbon: "0: Net zero emissions | 100: Very high emissions, no mitigation"
+                erosion: "0: Stable soils | 100: Active gully erosion",
+                vegetation: "0: Intact native vegetation | 100: Complete vegetation loss",
+                "water-quality": "0: Clear water | 100: Heavy contamination",
+                habitat: "0: Intact habitat | 100: Total destruction",
+                "air-quality": "0: Clean air | 100: Heavy smog",
+                noise: "0: Ambient noise | 100: Extreme noise",
+                waste: "0: No waste | 100: Hazardous waste",
+                biodiversity: "0: Healthy ecosystem | 100: Biodiversity collapse",
+                carbon: "0: Net zero | 100: Extreme emissions"
             };
 
             container.innerHTML = RISK_METRICS.map(metric => `
@@ -1476,54 +1245,176 @@
                         <span class="slider-value" id="value-${metric.id}">0</span>
                     </div>
                     <input type="range" id="slider-${metric.id}" min="0" max="100" value="0" step="1">
-                    <div class="slider-criteria">${criteriaMap[metric.id] || 'Objective criteria: 0 = minimal impact, 100 = extreme impact'}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                        <span class="slider-criteria">${criteriaMap[metric.id]}</span>
+                        <span class="slider-result-indicator" id="result-${metric.id}">Stable</span>
+                    </div>
                 </div>
             `).join('');
+
+            // Initialize result indicators
+            RISK_METRICS.forEach(metric => updateResultIndicator(metric.id, 0));
         }
-        
-        // Initialize activities
+
+        function updateResultIndicator(metricId, value) {
+            const indicators = RESULT_INDICATORS[metricId];
+            if (!indicators) return;
+            let label = "Unknown";
+            let color = "#6c757d";
+            for (const ind of indicators) {
+                if (value <= ind.max) {
+                    label = ind.label;
+                    color = ind.color;
+                    break;
+                }
+            }
+            const el = document.getElementById(`result-${metricId}`);
+            if (el) {
+                el.textContent = label;
+                el.style.background = color;
+                el.style.color = "#fff";
+            }
+        }
+
+        // ============================================
+        // TASMANIA-SPECIFIC FUNCTIONS
+        // ============================================
+        function initializeBioregions() {
+            const container = document.getElementById('bioregion-container');
+            container.innerHTML = TAS_BIOREGIONS.map(b => `
+                <button class="bioregion-btn" onclick="selectBioregion('${b.name}', ${b.multiplier})">
+                    ${b.name} <span style="font-size:0.7rem;">(${b.multiplier}x)</span>
+                </button>
+            `).join('');
+        }
+
+        function selectBioregion(name, multiplier) {
+            selectedBioregion = name;
+            currentMultiplier = multiplier;
+            document.querySelectorAll('.bioregion-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent.includes(name)) btn.classList.add('selected');
+            });
+            const info = TAS_BIOREGIONS.find(b => b.name === name);
+            document.getElementById('selected-bioregion-info').innerHTML = `✓ Selected: ${name} - Risk multiplier: ${multiplier}x applied to budget and risk weighting`;
+            document.getElementById('bioregion-risk-impact').innerHTML = `<span style="color:var(--warning);">⚠️ ${info.description} - Enhanced mitigation may be required.</span>`;
+            updateAllCalculations();
+            updateEPBCReferral();
+            showNotification(`Bioregion set to ${name} (${multiplier}x)`, 'success');
+        }
+
+        function updateEPBCReferral() {
+            const container = document.getElementById('epbc-container');
+            if (!container) return;
+            const riskScore = calculateTotalRisk();
+            const biodiversityRisk = parseFloat(document.getElementById(`slider-biodiversity`)?.value) || 0;
+            const habitatRisk = parseFloat(document.getElementById(`slider-habitat`)?.value) || 0;
+            const vegetationRisk = parseFloat(document.getElementById(`slider-vegetation`)?.value) || 0;
+            let needsReferral = false;
+            let reasons = [];
+            if (biodiversityRisk > 60 || habitatRisk > 60) { needsReferral = true; reasons.push('Threatened species/habitat impact exceeds threshold'); }
+            if (vegetationRisk > 70) { needsReferral = true; reasons.push('Significant native vegetation clearance'); }
+            if (riskScore > 70 && selectedBioregion && (selectedBioregion === 'Central Highlands' || selectedBioregion === 'West Coast')) {
+                needsReferral = true; reasons.push('High risk in high-conservation bioregion');
+            }
+            if (needsReferral) {
+                container.innerHTML = `
+                    <div style="padding:1rem; background:#f8d7da; border-radius:8px; border-left:4px solid var(--danger);">
+                        <strong style="color:var(--danger);">⚠️ EPBC ACT REFERRAL LIKELY REQUIRED</strong>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">This project may impact Matters of National Environmental Significance (MNES).</p>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">Reasons: ${reasons.join('; ')}</p>
+                        <p style="margin-top:0.5rem; font-size:0.75rem;">Contact: Department of Climate Change, Energy, the Environment and Water<br>Referral portal: https://epbcreferrals.awe.gov.au</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="padding:1rem; background:#d4edda; border-radius:8px; border-left:4px solid var(--success);">
+                        <strong style="color:var(--success);">✓ EPBC Act Referral Not Indicated</strong>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">Based on current assessment, an EPBC Act referral does not appear to be required.</p>
+                        <p style="margin-top:0.5rem; font-size:0.75rem;">Note: Final determination requires professional ecological advice.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function calculateOffsets() {
+            const area = parseFloat(document.getElementById('clear-area').value) || 0;
+            const vegType = document.getElementById('veg-type').value;
+            const threatenedFactor = parseFloat(document.getElementById('threatened-species-select').value);
+            let multiplier = 1; let vegDescription = '';
+            switch(vegType) {
+                case 'low': multiplier = 2; vegDescription = 'Low Conservation Value'; break;
+                case 'medium': multiplier = 5; vegDescription = 'Medium Conservation Value'; break;
+                case 'high': multiplier = 10; vegDescription = 'High Conservation Value'; break;
+                case 'critical': multiplier = 15; vegDescription = 'Critical / TEC'; break;
+                default: multiplier = 2;
+            }
+            const totalMultiplier = multiplier * (1 + threatenedFactor) * currentMultiplier;
+            const offsetHectares = area * totalMultiplier;
+            const estimatedCost = offsetHectares * 25000;
+            const result = document.getElementById('offsets-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <div class="offsets-result">
+                    <h4 style="color:var(--primary); margin-bottom:1rem;">📊 Biodiversity Offsets Calculation</h4>
+                    <div style="display:grid; gap:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Area to be cleared:</strong> <span>${area.toFixed(2)} ha</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Vegetation type:</strong> <span>${vegDescription}</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Base multiplier:</strong> <span>${multiplier}:1</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Threatened species factor:</strong> <span>+${(threatenedFactor * 100)}%</span></div>
+                        ${selectedBioregion ? `<div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Bioregion multiplier:</strong> <span>${currentMultiplier}x (${selectedBioregion})</span></div>` : ''}
+                        <div style="padding-top:0.75rem; border-top:2px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; font-weight:bold;"><span>Total offset required:</span> <span style="color:var(--primary);">${offsetHectares.toFixed(2)} ha</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><span>Estimated offset cost:</span> <span>$${estimatedCost.toLocaleString()}</span></div>
+                    </div>
+                    <p style="margin-top:1rem; font-size:0.7rem; color:var(--text-gray);">* Based on Tasmanian Biodiversity Offsets Policy (DPIPWE).</p>
+                </div>
+            `;
+            showNotification('Offsets calculation complete', 'success');
+        }
+
+        function initializeTasLegislationSummary() {
+            const container = document.getElementById('tas-legislation-summary');
+            container.innerHTML = `
+                <div class="form-grid">
+                    ${TAS_LEGISLATION_SUMMARY.map(leg => `
+                        <div style="padding:0.75rem; background:#f9fafb; border-radius:8px; border-left:3px solid var(--primary);">
+                            <strong style="color:var(--primary-dark);">${leg.name}</strong>
+                            <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.25rem;">${leg.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <p style="margin-top:1rem; font-size:0.75rem; color:var(--text-gray);">Refer to DPIPWE for formal interpretation.</p>
+            `;
+        }
+
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
         function initializeActivities() {
             const container = document.getElementById('activities-container');
-            const visibleActivities = ALL_ACTIVITIES.slice(0, 8);
-            const hiddenActivities = ALL_ACTIVITIES.slice(8);
-            
-            container.innerHTML = visibleActivities.map(activity => `
-                <li>
-                    <input type="checkbox" value="${activity}" onchange="updateAllCalculations()">
-                    <span>${activity}</span>
-                </li>
-            `).join('');
-            
-            hiddenActivities.forEach(activity => {
-                container.innerHTML += `
-                    <li class="hidden-activity">
-                        <input type="checkbox" value="${activity}" onchange="updateAllCalculations()">
-                        <span>${activity}</span>
-                    </li>
-                `;
+            const visible = ALL_ACTIVITIES.slice(0, 8);
+            const hidden = ALL_ACTIVITIES.slice(8);
+            container.innerHTML = visible.map(a => `<li><input type="checkbox" value="${a}" onchange="updateAllCalculations()"><span>${a}</span></li>`).join('');
+            hidden.forEach(a => {
+                container.innerHTML += `<li class="hidden-activity"><input type="checkbox" value="${a}" onchange="updateAllCalculations()"><span>${a}</span></li>`;
             });
         }
-        
-        // Toggle all activities
+
         function toggleAllActivities() {
             const hidden = document.querySelectorAll('.hidden-activity');
             const btn = document.getElementById('toggle-activities-btn');
             let visibleCount = 0;
-            
             hidden.forEach(el => {
                 if (el.style.display === 'none' || !el.style.display) {
-                    el.style.display = 'flex';
-                    visibleCount++;
+                    el.style.display = 'flex'; visibleCount++;
                 } else {
                     el.style.display = 'none';
                 }
             });
-            
             const totalHidden = hidden.length;
             btn.textContent = visibleCount > 0 ? `Show Less Activities (${totalHidden - visibleCount} hidden)` : `Show More Activities (${totalHidden} more)`;
         }
-        
-        // Initialize mitigation measures
+
         function initializeMitigationMeasures() {
             const measures = [
                 { icon: "🏗️", name: "Erosion Control", desc: "Install sediment traps, silt fences, and check dams to prevent soil loss." },
@@ -1535,17 +1426,15 @@
                 { icon: "🔇", name: "Noise Control", desc: "Use noise barriers and schedule activities during off-peak hours." },
                 { icon: "🌬️", name: "Air Quality", desc: "Install dust control systems and monitor air quality regularly." }
             ];
-            
             const container = document.getElementById('mitigation-container');
             container.innerHTML = measures.map(m => `
-                <div style="margin-bottom: 1rem; padding: 1rem; background: #f9fafb; border-radius: 8px;">
-                    <strong style="color: var(--primary);">${m.icon} ${m.name}</strong>
-                    <p style="margin-top: 0.5rem; font-size: 0.875rem;">${m.desc}</p>
+                <div style="margin-bottom:1rem; padding:1rem; background:#f9fafb; border-radius:8px;">
+                    <strong style="color:var(--primary);">${m.icon} ${m.name}</strong>
+                    <p style="margin-top:0.5rem; font-size:0.875rem;">${m.desc}</p>
                 </div>
             `).join('');
         }
-        
-        // Initialize guidance
+
         function initializeGuidance() {
             const tips = [
                 "📋 Start by filling out project details and site information",
@@ -1560,85 +1449,39 @@
                 "🇦🇺 Check EPBC Act referral requirements",
                 "📄 Generate PDF reports for documentation"
             ];
-            
             const container = document.getElementById('guidance-container');
             container.innerHTML = tips.map(tip => `
-                <div style="padding: 0.5rem; border-left: 3px solid var(--primary); margin-bottom: 0.5rem; background: #f9fafb; border-radius: 4px;">
-                    ${tip}
-                </div>
+                <div style="padding:0.5rem; border-left:3px solid var(--primary); margin-bottom:0.5rem; background:#f9fafb; border-radius:4px;">${tip}</div>
             `).join('');
         }
-        
-        // Initialize charts
+
         function initializeCharts() {
             const ctxRadar = document.getElementById('radar-chart').getContext('2d');
             const ctxBar = document.getElementById('bar-chart').getContext('2d');
-            
             radarChart = new Chart(ctxRadar, {
                 type: 'radar',
-                data: {
-                    labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g, '').trim()),
-                    datasets: [{
-                        label: 'Impact Level (%)',
-                        data: RISK_METRICS.map(() => 0),
-                        backgroundColor: 'rgba(42, 111, 75, 0.2)',
-                        borderColor: '#2a6f4b',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#2a6f4b',
-                        pointBorderColor: '#fff',
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } } }
-                }
+                data: { labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g,'').trim()), datasets: [{ label: 'Impact Level (%)', data: RISK_METRICS.map(()=>0), backgroundColor: 'rgba(42,111,75,0.2)', borderColor: '#2a6f4b', borderWidth: 2, pointBackgroundColor: '#2a6f4b', pointBorderColor: '#fff', pointHoverRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } } } }
             });
-            
             barChart = new Chart(ctxBar, {
                 type: 'bar',
-                data: {
-                    labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g, '').trim()),
-                    datasets: [{
-                        label: 'Impact Level (%)',
-                        data: RISK_METRICS.map(() => 0),
-                        backgroundColor: (context) => {
-                            const value = context.dataset.data[context.dataIndex];
-                            if (value > 70) return '#c84f43';
-                            if (value > 40) return '#f0c75e';
-                            return '#6ba583';
-                        },
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Impact (%)' } } }
-                }
+                data: { labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g,'').trim()), datasets: [{ label: 'Impact Level (%)', data: RISK_METRICS.map(()=>0), backgroundColor: (ctx) => { const v = ctx.dataset.data[ctx.dataIndex]; return v > 70 ? '#c84f43' : v > 40 ? '#f0c75e' : '#6ba583'; }, borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Impact (%)' } } } }
             });
         }
-        
-        // Calculate total risk score
+
         function calculateTotalRisk() {
             let total = 0;
-            RISK_METRICS.forEach(metric => {
-                const value = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                total += value * metric.weight;
-            });
+            RISK_METRICS.forEach(m => { const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0; total += v * m.weight; });
             return Math.round(total);
         }
-        
-        // Get risk level
+
         function getRiskLevel(score) {
             if (score <= 30) return { level: 'Low Risk', class: 'risk-low', color: '#6ba583' };
             if (score <= 60) return { level: 'Moderate Risk', class: 'risk-moderate', color: '#f0c75e' };
             return { level: 'High Risk', class: 'risk-high', color: '#c84f43' };
         }
-        
-        // Update all calculations
+
         function updateAllCalculations() {
             updateRiskDisplay();
             updateCharts();
@@ -1650,8 +1493,7 @@
             renderCompliance();
             updateEPBCReferral();
         }
-        
-        // Update risk display
+
         function updateRiskDisplay() {
             const score = calculateTotalRisk();
             const risk = getRiskLevel(score);
@@ -1659,8 +1501,7 @@
             display.textContent = `Overall Risk: ${risk.level} (${score}%)${selectedBioregion ? ` | Bioregion: ${selectedBioregion} (${currentMultiplier}x)` : ''}`;
             display.className = `risk-display ${risk.class}`;
         }
-        
-        // Update charts
+
         function updateCharts() {
             const data = RISK_METRICS.map(m => parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0);
             if (radarChart) radarChart.data.datasets[0].data = data;
@@ -1668,362 +1509,235 @@
             if (radarChart) radarChart.update();
             if (barChart) barChart.update();
         }
-        
-        // Update recommendations
+
         function updateRecommendations() {
-            const recommendations = [];
-            RISK_METRICS.forEach(metric => {
-                const value = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                
-                if (value > 80) {
-                    recommendations.push({ metric: metric.label, level: 'high', msg: `URGENT: ${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()} requires immediate intervention. Implement control measures now.` });
-                } else if (value > 60) {
-                    recommendations.push({ metric: metric.label, level: 'medium', msg: `${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()} shows elevated levels. Develop mitigation strategy within 30 days.` });
-                } else if (value > 40) {
-                    recommendations.push({ metric: metric.label, level: 'medium', msg: `Monitor ${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()} levels. Consider preventive measures.` });
-                } else if (value > 20) {
-                    recommendations.push({ metric: metric.label, level: 'low', msg: `${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()} within acceptable range. Continue regular monitoring.` });
-                }
+            const recs = [];
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                if (v > 80) recs.push({ metric: m.label, level: 'high', msg: `URGENT: ${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} requires immediate intervention.` });
+                else if (v > 60) recs.push({ metric: m.label, level: 'medium', msg: `${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} shows elevated levels. Develop mitigation strategy.` });
+                else if (v > 40) recs.push({ metric: m.label, level: 'medium', msg: `Monitor ${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} levels. Consider preventive measures.` });
+                else if (v > 20) recs.push({ metric: m.label, level: 'low', msg: `${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} within acceptable range. Continue monitoring.` });
             });
-            
-            // Add bioregion-specific recommendation
             if (selectedBioregion && selectedBioregion !== "Northern Slopes") {
-                recommendations.push({ metric: "Bioregion Alert", level: 'medium', msg: `Project located in ${selectedBioregion} bioregion. Enhanced environmental controls may be required due to higher conservation significance.` });
+                recs.push({ metric: "Bioregion Alert", level: 'medium', msg: `Project located in ${selectedBioregion}. Enhanced controls may be required.` });
             }
-            
             const container = document.getElementById('recommendations-container');
-            if (recommendations.length === 0) {
-                container.innerHTML = '<p style="color: var(--primary);">✓ All environmental impacts within acceptable limits. Continue monitoring.</p>';
-                return;
-            }
-            
-            container.innerHTML = recommendations.slice(0, 5).map(rec => `
-                <div class="recommendation-item recommendation-${rec.level}">
-                    <strong>${rec.metric.replace(/[^a-zA-Z\s]/g, '').trim()}:</strong> ${rec.msg}
+            if (recs.length === 0) { container.innerHTML = '<p style="color:var(--primary);">✓ All impacts within acceptable limits.</p>'; return; }
+            container.innerHTML = recs.slice(0, 5).map(r => `
+                <div class="recommendation-item recommendation-${r.level}">
+                    <strong>${r.metric.replace(/[^a-zA-Z\s]/g,'').trim()}:</strong> ${r.msg}
                 </div>
             `).join('');
         }
-        
-        // Update progress
+
         function updateProgress() {
             let completed = 0;
-            RISK_METRICS.forEach(metric => {
-                const value = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                if (value > 0) completed++;
-            });
-            
+            RISK_METRICS.forEach(m => { if (parseFloat(document.getElementById(`slider-${m.id}`)?.value) > 0) completed++; });
             const percent = Math.round((completed / RISK_METRICS.length) * 100);
             const bar = document.getElementById('progress-bar');
             const text = document.getElementById('progress-text');
-            
             bar.style.width = `${percent}%`;
             bar.textContent = `${percent}%`;
-            text.textContent = `Risk assessment complete: ${percent}% (${completed}/${RISK_METRICS.length} metrics evaluated)`;
+            text.textContent = `Risk assessment: ${percent}% (${completed}/${RISK_METRICS.length} metrics)`;
         }
-        
-        // Risk comparison (current vs previous)
+
+        function updateBudget() {
+            const area = parseFloat(document.getElementById('project-area')?.value) || 1;
+            let total = 0; let items = [];
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                const cost = v * 75 * area * currentMultiplier;
+                total += cost;
+                if (v > 0) items.push(`<div class="budget-item"><span>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</span><span>$${Math.round(cost).toLocaleString()}</span></div>`);
+            });
+            const container = document.getElementById('budget-container');
+            container.innerHTML = `
+                ${items.length > 0 ? items.join('') : '<p style="color:var(--text-gray);">Adjust risk sliders to see cost estimates</p>'}
+                <div class="budget-total"><span>Total Estimated Cost:</span><span style="color:var(--primary);">$${Math.round(total).toLocaleString()}</span></div>
+                <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.5rem;">* Based on ${area} ha, risk levels${selectedBioregion ? `, ${selectedBioregion} (${currentMultiplier}x)` : ''}</p>
+            `;
+        }
+
         function updateRiskComparison() {
             const currentData = RISK_METRICS.map(m => parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0);
-            
-            if (!previousRiskData) {
-                previousRiskData = currentData.map(() => Math.floor(Math.random() * 30));
-            }
-            
+            if (!previousRiskData) previousRiskData = currentData.map(() => Math.floor(Math.random() * 30));
             const container = document.getElementById('risk-comparison');
-            let html = '<h4 style="margin-bottom: 1rem;">Comparison with Previous Assessment</h4>';
-            
-            RISK_METRICS.forEach((metric, i) => {
-                const current = currentData[i];
-                const previous = previousRiskData[i];
-                const diff = current - previous;
+            let html = '<h4 style="margin-bottom:1rem;">Comparison with Previous Assessment</h4>';
+            RISK_METRICS.forEach((m, i) => {
+                const cur = currentData[i], prev = previousRiskData[i], diff = cur - prev;
                 const trend = diff > 0 ? '↑ Increase' : diff < 0 ? '↓ Decrease' : '→ Stable';
                 const color = diff > 0 ? 'var(--danger)' : diff < 0 ? 'var(--primary)' : 'var(--text-gray)';
-                
-                html += `
-                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border);">
-                        <span>${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()}</span>
-                        <span>Previous: ${previous}%</span>
-                        <span>Current: ${current}%</span>
-                        <span style="color: ${color};">${trend} (${Math.abs(diff)}%)</span>
-                    </div>
-                `;
+                html += `<div style="display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border);">
+                    <span>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</span>
+                    <span>Previous: ${prev}%</span>
+                    <span>Current: ${cur}%</span>
+                    <span style="color:${color};">${trend} (${Math.abs(diff)}%)</span>
+                </div>`;
             });
-            
             container.innerHTML = html;
-            
-            // Save current for next comparison
             previousRiskData = [...currentData];
         }
-        
-        // Update projections
+
         function updateProjections() {
             const container = document.getElementById('projections-container');
-            let html = '<h4 style="margin-bottom: 1rem;">10-Year Impact Projections (Without Mitigation)</h4>';
-            
-            RISK_METRICS.forEach(metric => {
-                const current = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                const projection5 = Math.min(100, Math.round(current * 1.3));
-                const projection10 = Math.min(100, Math.round(current * 1.6));
-                const projection20 = Math.min(100, Math.round(current * 2.2));
-                
+            let html = '<h4 style="margin-bottom:1rem;">10-Year Impact Projections (Without Mitigation)</h4>';
+            RISK_METRICS.forEach(m => {
+                const cur = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                const p5 = Math.min(100, Math.round(cur * 1.3));
+                const p10 = Math.min(100, Math.round(cur * 1.6));
+                const p20 = Math.min(100, Math.round(cur * 2.2));
                 html += `
-                    <div style="margin-bottom: 1rem; padding: 0.75rem; background: #f9fafb; border-radius: 8px;">
-                        <strong>${metric.label.replace(/[^a-zA-Z\s]/g, '').trim()}</strong>
-                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.875rem; flex-wrap: wrap;">
-                            <span>Current: ${current}%</span>
-                            <span>→ 5 Years: ${projection5}%</span>
-                            <span>→ 10 Years: ${projection10}%</span>
-                            <span>→ 20 Years: ${projection20}%</span>
+                    <div style="margin-bottom:1rem; padding:0.75rem; background:#f9fafb; border-radius:8px;">
+                        <strong>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</strong>
+                        <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:0.875rem; flex-wrap:wrap;">
+                            <span>Current: ${cur}%</span>
+                            <span>→ 5 Yr: ${p5}%</span>
+                            <span>→ 10 Yr: ${p10}%</span>
+                            <span>→ 20 Yr: ${p20}%</span>
                         </div>
-                        <div class="progress-container" style="margin-top: 0.5rem; height: 6px;">
-                            <div class="progress-bar" style="width: ${projection20}%; background: var(--danger);"></div>
+                        <div class="progress-container" style="margin-top:0.5rem; height:6px;">
+                            <div class="progress-bar" style="width:${p20}%; background:var(--danger);"></div>
                         </div>
                     </div>
                 `;
             });
-            
             container.innerHTML = html;
         }
-        
-        // Render compliance - FULLY POPULATED with dynamic status calculation
+
         function renderCompliance() {
             const container = document.getElementById('compliance-container');
             if (!container) return;
-            
-            // Calculate compliance based on risk values
             const riskValues = {};
-            RISK_METRICS.forEach(metric => {
-                riskValues[metric.id] = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-            });
-            
-            // Update policy statuses based on risk values
-            const updatedPolicies = POLICIES.map(policy => {
-                let status = policy.status;
-                
-                // Dynamically update status based on risk levels
-                if (policy.criteria && policy.criteria.length > 0) {
-                    const relevantRisks = policy.criteria.map(c => riskValues[c] || 0);
+            RISK_METRICS.forEach(m => { riskValues[m.id] = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0; });
+            const updatedPolicies = POLICIES.map(p => {
+                let status = p.status;
+                if (p.criteria && p.criteria.length > 0) {
+                    const relevantRisks = p.criteria.map(c => riskValues[c] || 0);
                     const maxRisk = Math.max(...relevantRisks, 0);
-                    
-                    if (maxRisk > 70) {
-                        status = "Non-Compliant";
-                    } else if (maxRisk > 50) {
-                        status = "Partial";
-                    } else if (maxRisk > 30) {
-                        status = "Under Review";
-                    } else if (maxRisk > 0) {
-                        status = "Compliant";
-                    }
+                    if (maxRisk > 70) status = "Non-Compliant";
+                    else if (maxRisk > 50) status = "Partial";
+                    else if (maxRisk > 30) status = "Under Review";
+                    else if (maxRisk > 0) status = "Compliant";
                 }
-                
-                return { ...policy, status };
+                return { ...p, status };
             });
-            
-            let compliantCount = 0;
-            let partialCount = 0;
-            let nonCompliantCount = 0;
-            
-            container.innerHTML = updatedPolicies.map(policy => {
+            let compliantCount = 0, partialCount = 0, nonCompliantCount = 0;
+            container.innerHTML = updatedPolicies.map(p => {
                 let statusClass = '';
-                let statusText = policy.status;
-                
-                switch(policy.status) {
-                    case 'Compliant':
-                        statusClass = 'status-compliant';
-                        compliantCount++;
-                        break;
-                    case 'Partial':
-                    case 'In Progress':
-                        statusClass = 'status-partial';
-                        partialCount++;
-                        break;
-                    case 'Non-Compliant':
-                        statusClass = 'status-non-compliant';
-                        nonCompliantCount++;
-                        break;
-                    case 'Needs Review':
-                    case 'Under Review':
-                        statusClass = 'status-review';
-                        partialCount++;
-                        break;
-                    default:
-                        statusClass = 'status-review';
+                switch(p.status) {
+                    case 'Compliant': statusClass = 'status-compliant'; compliantCount++; break;
+                    case 'Partial': case 'In Progress': statusClass = 'status-partial'; partialCount++; break;
+                    case 'Non-Compliant': statusClass = 'status-non-compliant'; nonCompliantCount++; break;
+                    default: statusClass = 'status-review'; partialCount++;
                 }
-                
-                return `
-                    <div class="compliance-item">
-                        <div style="flex: 1;">
-                            <strong>${policy.name}</strong>
-                            <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 0.25rem;">${policy.description}</p>
-                        </div>
-                        <div style="text-align: right;">
-                            <span class="compliance-status ${statusClass}">${statusText}</span>
-                            <br>
-                            <a href="${policy.reference}" target="_blank" class="compliance-link">View Standard →</a>
-                        </div>
+                return `<div class="compliance-item">
+                    <div style="flex:1;"><strong>${p.name}</strong><p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.25rem;">${p.description}</p></div>
+                    <div style="text-align:right;">
+                        <span class="compliance-status ${statusClass}">${p.status}</span><br>
+                        <a href="${p.reference}" target="_blank" class="compliance-link">View Standard →</a>
                     </div>
-                `;
+                </div>`;
             }).join('');
-            
             const totalPolicies = updatedPolicies.filter(p => p.status !== 'Not Applicable').length;
             const score = Math.round((compliantCount / totalPolicies) * 100);
-            
-            let scoreColor = '';
-            let scoreMessage = '';
-            if (score >= 80) {
-                scoreColor = 'var(--primary)';
-                scoreMessage = 'Excellent - All major requirements met';
-            } else if (score >= 60) {
-                scoreColor = 'var(--warning)';
-                scoreMessage = 'Good - Some areas need attention';
-            } else {
-                scoreColor = 'var(--danger)';
-                scoreMessage = 'Action Required - Multiple compliance gaps identified';
-            }
-            
+            let scoreColor = '', scoreMessage = '';
+            if (score >= 80) { scoreColor = 'var(--primary)'; scoreMessage = 'Excellent - All major requirements met'; }
+            else if (score >= 60) { scoreColor = 'var(--warning)'; scoreMessage = 'Good - Some areas need attention'; }
+            else { scoreColor = 'var(--danger)'; scoreMessage = 'Action Required - Multiple compliance gaps identified'; }
             document.getElementById('compliance-score').innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                    <div>
-                        <span style="font-size: 1.25rem;">Overall Compliance Score: <span style="color: ${scoreColor};">${score}%</span></span>
-                        <p style="font-size: 0.875rem; margin-top: 0.25rem;">${scoreMessage}</p>
-                    </div>
-                    <div style="display: flex; gap: 1rem;">
-                        <span style="color: var(--primary);">✓ Compliant: ${compliantCount}</span>
-                        <span style="color: var(--warning);">⚠️ Partial: ${partialCount}</span>
-                        <span style="color: var(--danger);">✗ Non-Compliant: ${nonCompliantCount}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div><span style="font-size:1.25rem;">Overall Compliance Score: <span style="color:${scoreColor};">${score}%</span></span>
+                    <p style="font-size:0.875rem; margin-top:0.25rem;">${scoreMessage}</p></div>
+                    <div style="display:flex; gap:1rem;">
+                        <span style="color:var(--primary);">✓ Compliant: ${compliantCount}</span>
+                        <span style="color:var(--warning);">⚠️ Partial: ${partialCount}</span>
+                        <span style="color:var(--danger);">✗ Non-Compliant: ${nonCompliantCount}</span>
                     </div>
                 </div>
             `;
         }
-        
-        // Timeline functions
+
+        // ============================================
+        // TIMELINE & STAKEHOLDERS
+        // ============================================
         function renderTimeline() {
             const container = document.getElementById('timeline-container');
-            if (milestones.length === 0) {
-                container.innerHTML = '<p>No milestones added.</p>';
-                return;
-            }
-            
+            if (milestones.length === 0) { container.innerHTML = '<p>No milestones added.</p>'; return; }
             container.innerHTML = milestones.map((m, i) => `
                 <div class="timeline-item">
                     <h4>${m.name}</h4>
-                    <input type="date" value="${m.date}" onchange="updateMilestoneDate(${i}, this.value)" style="width: 160px;">
-                    ${m.editable ? `<button class="btn btn-sm btn-danger" onclick="deleteMilestone(${i})">Delete</button>` : '<span style="font-size: 0.75rem; color: var(--text-gray);">Default</span>'}
+                    <input type="date" value="${m.date}" onchange="updateMilestoneDate(${i}, this.value)" style="width:160px;">
+                    ${m.editable ? `<button class="btn btn-sm btn-danger" onclick="deleteMilestone(${i})">Delete</button>` : '<span style="font-size:0.75rem; color:var(--text-gray);">Default</span>'}
                 </div>
             `).join('');
         }
-        
+
         function addMilestone() {
             const name = document.getElementById('milestone-name').value.trim();
             const date = document.getElementById('milestone-date').value;
-            
-            if (!name) {
-                showNotification('Please enter a milestone name', 'error');
-                return;
-            }
-            
+            if (!name) { showNotification('Please enter a milestone name', 'error'); return; }
             milestones.push({ name, date, editable: true });
             renderTimeline();
             document.getElementById('milestone-name').value = '';
             document.getElementById('milestone-date').value = '';
-            showNotification('Milestone added successfully', 'success');
+            showNotification('Milestone added', 'success');
             saveToLocalStorage();
         }
-        
-        function updateMilestoneDate(index, date) {
-            milestones[index].date = date;
-            renderTimeline();
-            saveToLocalStorage();
-        }
-        
-        function deleteMilestone(index) {
-            milestones.splice(index, 1);
-            renderTimeline();
-            saveToLocalStorage();
-            showNotification('Milestone deleted', 'success');
-        }
-        
-        // Stakeholder functions
+
+        function updateMilestoneDate(index, date) { milestones[index].date = date; renderTimeline(); saveToLocalStorage(); }
+        function deleteMilestone(index) { milestones.splice(index, 1); renderTimeline(); saveToLocalStorage(); showNotification('Milestone deleted', 'success'); }
+
         function addStakeholder() {
             const role = document.getElementById('stakeholder-role').value.trim();
             const status = document.getElementById('stakeholder-status').value;
             const email = document.getElementById('stakeholder-email').value.trim();
             const phone = document.getElementById('stakeholder-phone').value.trim();
             const comments = document.getElementById('stakeholder-comments').value.trim();
-            
-            if (!role) {
-                showNotification('Please enter a stakeholder role', 'error');
-                return;
-            }
-            
-            stakeholders.push({
-                id: Date.now(),
-                role,
-                status,
-                email,
-                phone,
-                comments,
-                dateAdded: new Date().toISOString()
-            });
-            
+            if (!role) { showNotification('Please enter a stakeholder role', 'error'); return; }
+            stakeholders.push({ id: Date.now(), role, status, email, phone, comments, dateAdded: new Date().toISOString() });
             renderStakeholders();
             document.getElementById('stakeholder-role').value = '';
             document.getElementById('stakeholder-email').value = '';
             document.getElementById('stakeholder-phone').value = '';
             document.getElementById('stakeholder-comments').value = '';
-            showNotification('Stakeholder added successfully', 'success');
+            showNotification('Stakeholder added', 'success');
             saveToLocalStorage();
         }
-        
+
         function renderStakeholders() {
             const container = document.getElementById('stakeholder-list');
-            
-            if (stakeholders.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-gray); text-align: center;">No stakeholders added yet. Add stakeholders to track engagement.</p>';
-                updateStakeholderProgress();
-                return;
-            }
-            
-            container.innerHTML = `
-                <div class="stakeholder-grid">
-                    ${stakeholders.map(s => `
-                        <div class="stakeholder-card">
-                            <h4>${escapeHtml(s.role)}</h4>
-                            <p><strong>Status:</strong> <span class="status-badge status-${s.status.toLowerCase().replace(' ', '-')}">${s.status}</span></p>
-                            ${s.email ? `<p><strong>Email:</strong> ${escapeHtml(s.email)}</p>` : ''}
-                            ${s.phone ? `<p><strong>Phone:</strong> ${escapeHtml(s.phone)}</p>` : ''}
-                            ${s.comments ? `<p><strong>Comments:</strong> ${escapeHtml(s.comments)}</p>` : ''}
-                            <button class="btn btn-sm btn-danger" onclick="deleteStakeholder(${s.id})" style="margin-top: 0.5rem;">Remove</button>
-                        </div>
-                    `).join('')}
+            if (stakeholders.length === 0) { container.innerHTML = '<p style="color:var(--text-gray); text-align:center;">No stakeholders added yet.</p>'; updateStakeholderProgress(); return; }
+            container.innerHTML = `<div class="stakeholder-grid">${stakeholders.map(s => `
+                <div class="stakeholder-card">
+                    <h4>${escapeHtml(s.role)}</h4>
+                    <p><strong>Status:</strong> <span class="status-badge status-${s.status.toLowerCase().replace(' ', '-')}">${s.status}</span></p>
+                    ${s.email ? `<p><strong>Email:</strong> ${escapeHtml(s.email)}</p>` : ''}
+                    ${s.phone ? `<p><strong>Phone:</strong> ${escapeHtml(s.phone)}</p>` : ''}
+                    ${s.comments ? `<p><strong>Comments:</strong> ${escapeHtml(s.comments)}</p>` : ''}
+                    <button class="btn btn-sm btn-danger" onclick="deleteStakeholder(${s.id})" style="margin-top:0.5rem;">Remove</button>
                 </div>
-            `;
+            `).join('')}</div>`;
             updateStakeholderProgress();
         }
-        
-        function deleteStakeholder(id) {
-            stakeholders = stakeholders.filter(s => s.id !== id);
-            renderStakeholders();
-            saveToLocalStorage();
-            showNotification('Stakeholder removed', 'success');
-        }
-        
+
+        function deleteStakeholder(id) { stakeholders = stakeholders.filter(s => s.id !== id); renderStakeholders(); saveToLocalStorage(); showNotification('Stakeholder removed', 'success'); }
         function updateStakeholderProgress() {
             const confirmed = stakeholders.filter(s => s.status === 'Confirmed').length;
             const percent = stakeholders.length > 0 ? Math.round((confirmed / stakeholders.length) * 100) : 0;
             const bar = document.getElementById('stakeholder-progress');
             const text = document.getElementById('stakeholder-progress-text');
-            
             bar.style.width = `${percent}%`;
             bar.textContent = `${percent}%`;
             text.textContent = `Stakeholder engagement: ${percent}% confirmed (${confirmed}/${stakeholders.length})`;
         }
-        
-        // Save/Load functions
+
+        // ============================================
+        // SAVE / LOAD / CSV / PDF
+        // ============================================
         function saveToLocalStorage() {
             const riskValues = RISK_METRICS.map(m => document.getElementById(`slider-${m.id}`).value);
             const selectedActivities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
-            
             const data = {
                 projectName: document.getElementById('project-name').value,
                 location: document.getElementById('location').value,
@@ -2039,23 +1753,18 @@
                 landUse: document.getElementById('land-use').value,
                 currentActivities: document.getElementById('current-activities').value,
                 accessibility: document.getElementById('accessibility').value,
-                riskValues: riskValues,
-                selectedActivities: selectedActivities,
-                stakeholders: stakeholders,
-                milestones: milestones,
+                riskValues, selectedActivities, stakeholders, milestones,
                 projectArea: document.getElementById('project-area').value,
-                selectedBioregion: selectedBioregion
+                selectedBioregion
             };
             localStorage.setItem('eia_assessment_complete', JSON.stringify(data));
         }
-        
+
         function loadSavedData() {
             const saved = localStorage.getItem('eia_assessment_complete');
             if (!saved) return;
-            
             try {
                 const data = JSON.parse(saved);
-                
                 document.getElementById('project-name').value = data.projectName || '';
                 document.getElementById('location').value = data.location || '';
                 document.getElementById('assessor-name').value = data.assessorName || '';
@@ -2071,63 +1780,53 @@
                 document.getElementById('current-activities').value = data.currentActivities || '';
                 document.getElementById('accessibility').value = data.accessibility || '';
                 document.getElementById('project-area').value = data.projectArea || 1;
-                
                 if (data.riskValues) {
-                    RISK_METRICS.forEach((metric, i) => {
-                        const slider = document.getElementById(`slider-${metric.id}`);
+                    RISK_METRICS.forEach((m, i) => {
+                        const slider = document.getElementById(`slider-${m.id}`);
                         if (slider && data.riskValues[i]) {
                             slider.value = data.riskValues[i];
-                            document.getElementById(`value-${metric.id}`).textContent = data.riskValues[i];
+                            document.getElementById(`value-${m.id}`).textContent = data.riskValues[i];
+                            updateResultIndicator(m.id, parseInt(data.riskValues[i]));
                         }
                     });
                 }
-                
                 if (data.stakeholders) stakeholders = data.stakeholders;
                 if (data.milestones) milestones = data.milestones;
                 if (data.selectedBioregion) {
-                    const bioregion = TAS_BIOREGIONS.find(b => b.name === data.selectedBioregion);
-                    if (bioregion) selectBioregion(bioregion.name, bioregion.multiplier);
+                    const br = TAS_BIOREGIONS.find(b => b.name === data.selectedBioregion);
+                    if (br) selectBioregion(br.name, br.multiplier);
                 }
-                
                 renderStakeholders();
                 renderTimeline();
                 updateAllCalculations();
-                
                 showNotification('Previous session loaded', 'success');
-            } catch (e) {
-                console.error('Failed to load saved data:', e);
-            }
+            } catch (e) { console.error('Failed to load saved data:', e); }
         }
-        
-        function loadFromLocalStorage() {
-            loadSavedData();
-        }
-        
-        // CSV Export
+
+        function loadFromLocalStorage() { loadSavedData(); }
+
         function saveToCSV() {
             const riskValues = RISK_METRICS.map(m => document.getElementById(`slider-${m.id}`).value).join(';');
             const activities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value).join(';');
             const score = calculateTotalRisk();
             const riskLevel = getRiskLevel(score).level;
-            
-            const csvRows = [
-                ['Section', 'Field', 'Value'],
-                ['Project', 'Project Name', document.getElementById('project-name').value || 'N/A'],
-                ['Project', 'Location', document.getElementById('location').value || 'N/A'],
-                ['Project', 'Assessor', document.getElementById('assessor-name').value || 'N/A'],
-                ['Project', 'Assessment Date', document.getElementById('assessment-date').value || 'N/A'],
-                ['Tasmania', 'Bioregion', selectedBioregion || 'Not selected'],
-                ['Risk', 'Overall Score', score],
-                ['Risk', 'Risk Level', riskLevel],
-                ['Risk', 'Detailed Metrics', riskValues],
-                ['Activities', 'Selected Activities', activities],
-                ['Budget', 'Project Area (ha)', document.getElementById('project-area').value || '1'],
-                ['Stakeholders', 'Total Stakeholders', stakeholders.length],
-                ['Stakeholders', 'Confirmed', stakeholders.filter(s => s.status === 'Confirmed').length],
-                ['Milestones', 'Total Milestones', milestones.length]
+            const rows = [
+                ['Section','Field','Value'],
+                ['Project','Project Name', document.getElementById('project-name').value || 'N/A'],
+                ['Project','Location', document.getElementById('location').value || 'N/A'],
+                ['Project','Assessor', document.getElementById('assessor-name').value || 'N/A'],
+                ['Project','Assessment Date', document.getElementById('assessment-date').value || 'N/A'],
+                ['Tasmania','Bioregion', selectedBioregion || 'Not selected'],
+                ['Risk','Overall Score', score],
+                ['Risk','Risk Level', riskLevel],
+                ['Risk','Detailed Metrics', riskValues],
+                ['Activities','Selected Activities', activities],
+                ['Budget','Project Area (ha)', document.getElementById('project-area').value || '1'],
+                ['Stakeholders','Total', stakeholders.length],
+                ['Stakeholders','Confirmed', stakeholders.filter(s => s.status === 'Confirmed').length],
+                ['Milestones','Total', milestones.length]
             ];
-            
-            const csvContent = csvRows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+            const csvContent = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
@@ -2137,12 +1836,10 @@
             URL.revokeObjectURL(url);
             showNotification('Data exported to CSV', 'success');
         }
-        
-        // CSV Import
+
         function loadFromCSV(input) {
             const file = input.files[0];
             if (!file) return;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
                 const lines = e.target.result.split('\n');
@@ -2151,19 +1848,9 @@
                     if (parts.length >= 3) {
                         const field = parts[1].replace(/^"|"$/g, '');
                         const value = parts[2].replace(/^"|"$/g, '');
-                        
-                        const fieldMap = {
-                            'Project Name': 'project-name',
-                            'Location': 'location',
-                            'Assessor': 'assessor-name',
-                            'Assessment Date': 'assessment-date',
-                            'Project Area (ha)': 'project-area'
-                        };
-                        
-                        const elementId = fieldMap[field];
-                        if (elementId && document.getElementById(elementId)) {
-                            document.getElementById(elementId).value = value;
-                        }
+                        const map = { 'Project Name': 'project-name', 'Location': 'location', 'Assessor': 'assessor-name', 'Assessment Date': 'assessment-date', 'Project Area (ha)': 'project-area' };
+                        const elId = map[field];
+                        if (elId && document.getElementById(elId)) document.getElementById(elId).value = value;
                     }
                 }
                 updateAllCalculations();
@@ -2172,303 +1859,239 @@
             reader.readAsText(file);
             input.value = '';
         }
-        
-        // PDF Generation - enhanced to include ALL data and sanitized text
+
+        // Enhanced PDF with professional styling, proper text flow, no overflow
         async function generatePDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
-            let y = 20;
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 20;
+            let y = margin;
             
-            // Helper to add sanitized text
-            function sanitizeText(text) {
+            function sanitize(text) {
                 if (typeof text !== 'string') return 'N/A';
-                return text.replace(/[^\w\s.,;:!?()\-'"&@\/\\[\]{}<>+=*~%#|]/g, '').trim() || 'N/A';
+                return text.replace(/[^\w\s.,;:!?()\-'"&@\/\\[\]{}<>+=*~%#| ]/g, '').trim() || 'N/A';
             }
             
-            // Helper to add text with wrapping
-            function addWrappedText(text, x, y, maxWidth = 170) {
-                const lines = doc.splitTextToSize(sanitizeText(text), maxWidth);
+            function addText(text, x, y, fontSize = 10, maxWidth = pageWidth - margin * 2) {
+                doc.setFontSize(fontSize);
+                doc.setTextColor(0, 0, 0);
+                const lines = doc.splitTextToSize(sanitize(text), maxWidth);
                 doc.text(lines, x, y);
-                return y + lines.length * 5;
+                return y + lines.length * (fontSize * 0.45);
             }
             
+            function addHeading(text, y, level = 1) {
+                doc.setFontSize(level === 1 ? 16 : 12);
+                doc.setTextColor(30, 90, 62);
+                const lines = doc.splitTextToSize(sanitize(text), pageWidth - margin * 2);
+                doc.text(lines, margin, y);
+                return y + (level === 1 ? 10 : 7);
+            }
+            
+            function checkPage(y, needed = 15) {
+                if (y > doc.internal.pageSize.height - margin - needed) {
+                    doc.addPage();
+                    return margin;
+                }
+                return y;
+            }
+
             // Title
             doc.setFontSize(24);
             doc.setTextColor(30, 90, 62);
-            doc.text('Tasmanian Environmental Impact Assessment Report', 20, y);
-            y += 15;
-            
+            doc.text('Tasmanian Environmental Impact Assessment Report', margin, y);
+            y += 12;
             doc.setFontSize(10);
             doc.setTextColor(100, 100, 100);
-            doc.text(`Generated: ${new Date().toLocaleString()}`, 20, y);
-            y += 20;
+            y = addText(`Generated: ${new Date().toLocaleString()}`, margin, y, 10);
+            y += 6;
             
             // 1. Project Details
-            doc.setFontSize(14);
-            doc.setTextColor(30, 90, 62);
-            doc.text('1. Project Details', 20, y);
-            y += 10;
-            
+            y = checkPage(y, 40);
+            y = addHeading('1. Project Details', y, 1);
             doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            const projectName = sanitizeText(document.getElementById('project-name').value);
-            doc.text(`Project Name: ${projectName}`, 20, y);
-            y += 7;
-            doc.text(`Location: ${sanitizeText(document.getElementById('location').value)}`, 20, y);
-            y += 7;
-            doc.text(`Assessor: ${sanitizeText(document.getElementById('assessor-name').value)}`, 20, y);
-            y += 7;
-            doc.text(`Assessment Date: ${sanitizeText(document.getElementById('assessment-date').value)}`, 20, y);
-            y += 7;
-            doc.text(`Bioregion: ${sanitizeText(selectedBioregion || 'Not selected')}`, 20, y);
-            y += 7;
-            doc.text(`Project Description: ${sanitizeText(document.getElementById('project-description').value || 'Not provided')}`, 20, y);
-            y += 7;
-            doc.text(`Project Purpose: ${sanitizeText(document.getElementById('project-purpose').value || 'Not provided')}`, 20, y);
-            y += 15;
+            doc.setTextColor(0,0,0);
+            y = addText(`Project Name: ${sanitize(document.getElementById('project-name').value)}`, margin, y, 10);
+            y = addText(`Location: ${sanitize(document.getElementById('location').value)}`, margin, y, 10);
+            y = addText(`Assessor: ${sanitize(document.getElementById('assessor-name').value)}`, margin, y, 10);
+            y = addText(`Date: ${sanitize(document.getElementById('assessment-date').value)}`, margin, y, 10);
+            y = addText(`Bioregion: ${sanitize(selectedBioregion || 'Not selected')}`, margin, y, 10);
+            y = addText(`Description: ${sanitize(document.getElementById('project-description').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Purpose: ${sanitize(document.getElementById('project-purpose').value || 'Not provided')}`, margin, y, 10);
+            y += 6;
             
             // 2. Site Information
-            doc.setFontSize(14);
-            doc.setTextColor(30, 90, 62);
-            doc.text('2. Site Information', 20, y);
-            y += 10;
-            
+            y = checkPage(y, 40);
+            y = addHeading('2. Site Information', y, 1);
             doc.setFontSize(10);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Flora & Fauna: ${sanitizeText(document.getElementById('flora-fauna').value || 'Not provided')}`, 20, y);
-            y += 7;
-            doc.text(`Soil Type: ${sanitizeText(document.getElementById('soil-type').value || 'Not specified')}`, 20, y);
-            y += 7;
-            doc.text(`Waterways: ${sanitizeText(document.getElementById('waterways').value || 'None')}`, 20, y);
-            y += 7;
-            doc.text(`Distance to Sensitive Ecosystems: ${sanitizeText(document.getElementById('eco-distance').value)} km`, 20, y);
-            y += 7;
-            doc.text(`Distance to Critical Infrastructure: ${sanitizeText(document.getElementById('infra-distance').value)} km`, 20, y);
-            y += 7;
-            doc.text(`Land Use History: ${sanitizeText(document.getElementById('land-use').value || 'Not provided')}`, 20, y);
-            y += 7;
-            doc.text(`Current Site Activities: ${sanitizeText(document.getElementById('current-activities').value || 'Not provided')}`, 20, y);
-            y += 7;
-            doc.text(`Accessibility: ${sanitizeText(document.getElementById('accessibility').value || 'Not specified')}`, 20, y);
-            y += 15;
+            y = addText(`Flora & Fauna: ${sanitize(document.getElementById('flora-fauna').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Soil Type: ${sanitize(document.getElementById('soil-type').value || 'Not specified')}`, margin, y, 10);
+            y = addText(`Waterways: ${sanitize(document.getElementById('waterways').value || 'None')}`, margin, y, 10);
+            y = addText(`Distance to Sensitive Ecosystems: ${sanitize(document.getElementById('eco-distance').value)} km`, margin, y, 10);
+            y = addText(`Distance to Critical Infrastructure: ${sanitize(document.getElementById('infra-distance').value)} km`, margin, y, 10);
+            y = addText(`Land Use History: ${sanitize(document.getElementById('land-use').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Current Activities: ${sanitize(document.getElementById('current-activities').value || 'Not provided')}`, margin, y, 10);
+            y += 6;
             
             // 3. Risk Assessment
+            y = checkPage(y, 40);
+            y = addHeading('3. Risk Assessment', y, 1);
             const score = calculateTotalRisk();
             const risk = getRiskLevel(score);
-            
-            doc.setFontSize(14);
-            doc.setTextColor(30, 90, 62);
-            doc.text('3. Risk Assessment', 20, y);
-            y += 10;
-            
             doc.setFontSize(12);
-            doc.text(`Overall Risk Score: ${score}% (${risk.level})`, 20, y);
-            y += 10;
-            
+            doc.setTextColor(0,0,0);
+            y = addText(`Overall Risk Score: ${score}% (${risk.level})`, margin, y, 12);
             doc.setFontSize(10);
-            RISK_METRICS.forEach(metric => {
-                const value = document.getElementById(`slider-${metric.id}`)?.value || 0;
-                const label = metric.label.replace(/[^a-zA-Z\s]/g, '').trim();
-                doc.text(`${label}: ${value}%`, 25, y);
-                y += 6;
-                if (y > 270) { doc.addPage(); y = 20; }
+            RISK_METRICS.forEach(m => {
+                const v = document.getElementById(`slider-${m.id}`)?.value || 0;
+                const label = m.label.replace(/[^a-zA-Z\s]/g,'').trim();
+                const indicator = RESULT_INDICATORS[m.id]?.find(i => v <= i.max)?.label || 'Unknown';
+                y = addText(`${label}: ${v}% (${indicator})`, margin + 5, y, 10);
+                y = checkPage(y, 20);
             });
-            y += 10;
+            y += 4;
             
-            // 4. Compliance Summary
-            doc.setFontSize(14);
-            doc.setTextColor(30, 90, 62);
-            doc.text('4. Compliance Summary', 20, y);
-            y += 10;
-            
+            // 4. Compliance
+            y = checkPage(y, 30);
+            y = addHeading('4. Compliance Summary', y, 1);
             const compliantCount = POLICIES.filter(p => p.status === 'Compliant').length;
             doc.setFontSize(10);
-            doc.text(`Overall Compliance: ${Math.round((compliantCount / POLICIES.length) * 100)}%`, 20, y);
-            y += 7;
-            doc.text(`Compliant Policies: ${compliantCount}/${POLICIES.length}`, 20, y);
-            y += 7;
-            
-            // List key policies
-            POLICIES.slice(0, 6).forEach(policy => {
-                doc.text(`• ${policy.name}: ${policy.status}`, 25, y);
-                y += 6;
-                if (y > 270) { doc.addPage(); y = 20; }
+            y = addText(`Overall Compliance: ${Math.round((compliantCount / POLICIES.length) * 100)}%`, margin, y, 10);
+            y = addText(`Compliant: ${compliantCount}/${POLICIES.length}`, margin, y, 10);
+            POLICIES.slice(0, 5).forEach(p => {
+                y = addText(`• ${p.name}: ${p.status}`, margin + 5, y, 9);
+                y = checkPage(y, 15);
             });
-            y += 10;
+            y += 4;
             
-            // 5. EPBC Status
-            doc.setFontSize(14);
-            doc.text('5. EPBC Act Status', 20, y);
-            y += 10;
-            doc.setFontSize(10);
+            // 5. EPBC
+            y = checkPage(y, 25);
+            y = addHeading('5. EPBC Act Status', y, 1);
             const epbcDiv = document.getElementById('epbc-container');
-            let epbcText = 'Not assessed';
-            if (epbcDiv) {
-                // Sanitize inner text
-                epbcText = sanitizeText(epbcDiv.innerText || 'Not assessed').substring(0, 400);
-            }
-            y = addWrappedText(epbcText, 20, y, 170);
-            y += 10;
+            let epbcText = epbcDiv ? sanitize(epbcDiv.innerText || 'Not assessed').substring(0, 350) : 'Not assessed';
+            y = addText(epbcText, margin, y, 10);
+            y += 6;
             
-            // 6. Selected Activities
-            doc.setFontSize(14);
-            doc.text('6. Selected Environmental Activities', 20, y);
-            y += 10;
-            doc.setFontSize(10);
-            const activities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
-            if (activities.length === 0) {
-                doc.text('No activities selected', 20, y);
-                y += 7;
+            // 6. Activities
+            y = checkPage(y, 25);
+            y = addHeading('6. Selected Activities', y, 1);
+            const acts = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
+            if (acts.length === 0) {
+                y = addText('No activities selected', margin, y, 10);
             } else {
-                activities.slice(0, 8).forEach(act => {
-                    doc.text(`• ${sanitizeText(act)}`, 25, y);
-                    y += 6;
-                    if (y > 270) { doc.addPage(); y = 20; }
+                acts.slice(0, 8).forEach(a => {
+                    y = addText(`• ${sanitize(a)}`, margin + 5, y, 9);
+                    y = checkPage(y, 15);
                 });
-                if (activities.length > 8) {
-                    doc.text(`... and ${activities.length - 8} more`, 25, y);
-                    y += 6;
+                if (acts.length > 8) {
+                    y = addText(`... and ${acts.length - 8} more`, margin + 5, y, 9);
                 }
             }
-            y += 10;
+            y += 4;
             
             // 7. Stakeholders
-            doc.setFontSize(14);
-            doc.text('7. Stakeholder Engagement', 20, y);
-            y += 10;
+            y = checkPage(y, 25);
+            y = addHeading('7. Stakeholders', y, 1);
             doc.setFontSize(10);
-            doc.text(`Total Stakeholders: ${stakeholders.length}`, 20, y);
-            y += 7;
-            doc.text(`Confirmed: ${stakeholders.filter(s => s.status === 'Confirmed').length}`, 20, y);
-            y += 7;
-            doc.text(`Pending: ${stakeholders.filter(s => s.status === 'Pending').length}`, 20, y);
-            y += 7;
-            if (stakeholders.length > 0) {
-                stakeholders.slice(0, 3).forEach(s => {
-                    doc.text(`• ${sanitizeText(s.role)} (${s.status})`, 25, y);
-                    y += 6;
-                    if (y > 270) { doc.addPage(); y = 20; }
-                });
-                if (stakeholders.length > 3) {
-                    doc.text(`... and ${stakeholders.length - 3} more`, 25, y);
-                    y += 6;
-                }
-            }
-            y += 10;
+            y = addText(`Total: ${stakeholders.length} | Confirmed: ${stakeholders.filter(s => s.status === 'Confirmed').length}`, margin, y, 10);
+            stakeholders.slice(0, 4).forEach(s => {
+                y = addText(`• ${sanitize(s.role)} (${s.status})`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            if (stakeholders.length > 4) y = addText(`... and ${stakeholders.length - 4} more`, margin + 5, y, 9);
+            y += 4;
             
             // 8. Budget
-            doc.setFontSize(14);
-            doc.text('8. Budget Estimate', 20, y);
-            y += 10;
-            doc.setFontSize(10);
+            y = checkPage(y, 25);
+            y = addHeading('8. Budget Estimate', y, 1);
             const area = document.getElementById('project-area').value || 1;
-            doc.text(`Project Area: ${area} hectares`, 20, y);
-            y += 7;
-            // Calculate total budget
             let totalBudget = 0;
-            RISK_METRICS.forEach(metric => {
-                const value = parseFloat(document.getElementById(`slider-${metric.id}`)?.value) || 0;
-                totalBudget += value * 75 * parseFloat(area) * currentMultiplier;
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                totalBudget += v * 75 * parseFloat(area) * currentMultiplier;
             });
-            doc.text(`Estimated Total Cost: $${Math.round(totalBudget).toLocaleString()}`, 20, y);
-            y += 15;
+            doc.setFontSize(10);
+            y = addText(`Project Area: ${area} ha`, margin, y, 10);
+            y = addText(`Estimated Total Cost: $${Math.round(totalBudget).toLocaleString()}`, margin, y, 12);
+            y += 6;
             
             // 9. Milestones
-            doc.setFontSize(14);
-            doc.text('9. Project Milestones', 20, y);
-            y += 10;
+            y = checkPage(y, 25);
+            y = addHeading('9. Project Milestones', y, 1);
             doc.setFontSize(10);
             milestones.forEach(m => {
-                doc.text(`• ${sanitizeText(m.name)}${m.date ? ` (${m.date})` : ''}`, 25, y);
-                y += 6;
-                if (y > 270) { doc.addPage(); y = 20; }
+                y = addText(`• ${sanitize(m.name)}${m.date ? ` (${m.date})` : ''}`, margin + 5, y, 9);
+                y = checkPage(y, 15);
             });
-            y += 10;
             
-            // Footer
+            // Footer on all pages
             const totalPages = doc.internal.getNumberOfPages();
             for (let i = 1; i <= totalPages; i++) {
                 doc.setPage(i);
                 doc.setFontSize(8);
                 doc.setTextColor(150, 150, 150);
-                doc.text(`Tasmanian EIA Report - Page ${i} of ${totalPages} - Preliminary Assessment Only`, 20, doc.internal.pageSize.height - 10);
+                doc.text(`Tasmanian EIA Report - Page ${i} of ${totalPages} - Preliminary Assessment Only`, margin, doc.internal.pageSize.height - 10);
             }
             
-            const filename = `Tasmania_EIA_Report_${projectName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            const filename = `Tasmania_EIA_Report_${sanitize(document.getElementById('project-name').value || 'project')}_${new Date().toISOString().slice(0,10)}.pdf`;
             doc.save(filename);
-            showNotification('PDF report generated with all data', 'success');
+            showNotification('Professional PDF report generated', 'success');
         }
-        
-        // Reset all data
+
+        // ============================================
+        // RESET & HELPERS
+        // ============================================
         function resetAllData() {
-            if (confirm('⚠️ WARNING: This will permanently delete ALL data. Are you sure you want to continue?')) {
-                document.querySelectorAll('input, textarea, select').forEach(el => {
-                    if (el.type === 'checkbox') el.checked = false;
-                    else if (el.type === 'range') el.value = '0';
-                    else if (el.tagName === 'SELECT') el.selectedIndex = 0;
-                    else if (el.type !== 'file' && el.id !== 'assessment-date') el.value = '';
-                });
-                
-                document.getElementById('assessment-date').valueAsDate = new Date();
-                
-                RISK_METRICS.forEach(metric => {
-                    const valueSpan = document.getElementById(`value-${metric.id}`);
-                    if (valueSpan) valueSpan.textContent = '0';
-                });
-                
-                stakeholders = [];
-                milestones = milestones.filter(m => !m.editable);
-                selectedBioregion = null;
-                currentMultiplier = 1.0;
-                document.querySelectorAll('.bioregion-btn').forEach(btn => btn.classList.remove('selected'));
-                document.getElementById('selected-bioregion-info').innerHTML = '';
-                document.getElementById('bioregion-risk-impact').innerHTML = '';
-                document.getElementById('offsets-result').style.display = 'none';
-                
-                localStorage.removeItem('eia_assessment_complete');
-                
-                renderStakeholders();
-                renderTimeline();
-                updateAllCalculations();
-                
-                showNotification('All data has been reset', 'info');
-            }
+            if (!confirm('⚠️ WARNING: This will permanently delete ALL data. Are you sure?')) return;
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else if (el.type === 'range') el.value = '0';
+                else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else if (el.type !== 'file' && el.id !== 'assessment-date') el.value = '';
+            });
+            document.getElementById('assessment-date').valueAsDate = new Date();
+            RISK_METRICS.forEach(m => {
+                document.getElementById(`value-${m.id}`).textContent = '0';
+                updateResultIndicator(m.id, 0);
+            });
+            stakeholders = [];
+            milestones = milestones.filter(m => !m.editable);
+            selectedBioregion = null; currentMultiplier = 1.0;
+            document.querySelectorAll('.bioregion-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('selected-bioregion-info').innerHTML = '';
+            document.getElementById('bioregion-risk-impact').innerHTML = '';
+            document.getElementById('offsets-result').style.display = 'none';
+            localStorage.removeItem('eia_assessment_complete');
+            renderStakeholders();
+            renderTimeline();
+            updateAllCalculations();
+            showNotification('All data reset', 'info');
         }
-        
-        // Submit feedback
+
         function submitFeedback() {
             const feedback = document.getElementById('user-feedback').value.trim();
-            if (!feedback) {
-                showNotification('Please enter your feedback', 'error');
-                return;
-            }
-            
-            console.log('Feedback submitted:', feedback);
+            if (!feedback) { showNotification('Please enter your feedback', 'error'); return; }
+            console.log('Feedback:', feedback);
             showNotification('Thank you for your feedback!', 'success');
             document.getElementById('user-feedback').value = '';
         }
-        
-        // Helper functions
+
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
         }
-        
+
         function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
+            const el = document.createElement('div');
+            el.className = 'notification';
             const colors = { success: '#2a6f4b', error: '#c84f43', info: '#4a90e2' };
-            notification.style.background = colors[type] || colors.info;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+            el.style.background = colors[type] || colors.info;
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
         }
-        
+
         function toggleCard(header) {
             const content = header.nextElementSibling;
             header.classList.toggle('collapsed');
