@@ -1,0 +1,2870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Tasmanian Environmental Impact Assessment Tool | Complete Professional Edition</title>
+    
+    <!-- Chart.js and jsPDF -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Leaflet for mapping -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #1e5a3e;
+            --primary: #2a6f4b;
+            --primary-light: #6ba583;
+            --warning: #f0c75e;
+            --danger: #c84f43;
+            --info: #4a90e2;
+            --bg-light: #f5f9f7;
+            --white: #ffffff;
+            --text-dark: #2c3e2f;
+            --text-gray: #6b7280;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --tas-gold: #B8860B;
+            --success: #28a745;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .header::before {
+            content: "🌿";
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        .header::after {
+            content: "🦘";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .tas-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            color: white;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+
+        .card-header .toggle-icon {
+            transition: transform 0.2s;
+        }
+
+        .card-header.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card-content.collapsed {
+            display: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--primary-dark);
+            font-size: 0.875rem;
+        }
+
+        input, select, textarea {
+            padding: 0.625rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 111, 75, 0.1);
+        }
+
+        .slider-group {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 0.75rem;
+        }
+        .slider-group:last-child {
+            border-bottom: none;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+
+        .slider-criteria {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-top: 0.2rem;
+            font-style: italic;
+        }
+
+        .slider-result-indicator {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 12px;
+            background: #f0f0f0;
+            color: var(--text-gray);
+            transition: all 0.2s;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, var(--primary-light), var(--warning), var(--danger));
+            border-radius: 3px;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            border: 2px solid white;
+        }
+
+        .slider-value {
+            background: var(--primary);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+            background: var(--primary-dark);
+        }
+
+        .btn-gold {
+            background: var(--tas-gold);
+        }
+
+        .btn-gold:hover {
+            background: #9a7009;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #b33f35;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sample {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+
+        .btn-sample:hover {
+            background: linear-gradient(135deg, #5a0db8, #1a5fc9);
+        }
+
+        .risk-display {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .risk-low {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+        }
+
+        .risk-moderate {
+            background: linear-gradient(135deg, #fff3cd, #ffeeba);
+            color: #856404;
+        }
+
+        .risk-high {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+        }
+
+        .progress-container {
+            background: var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 28px;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+
+        .recommendation-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .recommendation-high {
+            border-left-color: var(--danger);
+            background: #fff5f5;
+        }
+
+        .recommendation-medium {
+            border-left-color: var(--warning);
+            background: #fffef5;
+        }
+
+        .recommendation-low {
+            border-left-color: var(--primary-light);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-item h4 {
+            flex: 1;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .stakeholder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stakeholder-card {
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .stakeholder-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 0.5rem;
+            list-style: none;
+            margin-bottom: 1rem;
+        }
+
+        .activities-grid li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .hidden-activity {
+            display: none;
+        }
+
+        .budget-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .budget-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--primary);
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.125rem;
+        }
+
+        .compliance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .compliance-item:hover {
+            background: #f9fafb;
+        }
+
+        .compliance-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-compliant {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-partial {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-non-compliant {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-review {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .compliance-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.75rem;
+        }
+
+        .compliance-link:hover {
+            text-decoration: underline;
+        }
+
+        .bioregion-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .bioregion-btn {
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .bioregion-btn:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .bioregion-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .offsets-result {
+            background: linear-gradient(135deg, var(--bg-light), white);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            max-width: 350px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--primary-dark);
+            color: white;
+            margin-top: 2rem;
+        }
+
+        .disclaimer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            margin-top: 1rem;
+        }
+
+        /* Map styles */
+        #map-container {
+            height: 500px;
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 0.5rem 0 1rem 0;
+            background: #f0f0f0;
+            z-index: 1;
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .map-controls .btn {
+            flex: 0 1 auto;
+        }
+
+        .map-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .map-coords {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: #f9fafb;
+            border-radius: 6px;
+        }
+
+        .sample-banner {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sample-banner p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .sample-banner .btn {
+            background: white;
+            color: #6a11cb;
+            font-weight: 700;
+        }
+
+        .sample-banner .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Leaflet control geocoder fix */
+        .leaflet-control-geocoder {
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .chart-container {
+                height: 280px;
+            }
+            .timeline-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+            #map-container {
+                height: 350px;
+            }
+            .map-controls {
+                flex-direction: column;
+            }
+            .map-controls input[type="text"] {
+                width: 100%;
+            }
+            .sample-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌿 Tasmanian Environmental Impact Assessment Tool</h1>
+        <p>Complete Professional Assessment Suite | Real-time Analysis & Reporting | EMPC Act 1994 | TSP Act 1995</p>
+        <div class="tas-badge">⚖️ Tasmania Edition | DPIPWE Standards | EPBC Act Referral Check</div>
+    </div>
+
+    <div class="container">
+        <!-- Sample Project Banner -->
+        <div class="sample-banner">
+            <p>🚀 <strong>Want to see the tool in action?</strong> Load a complete sample project with realistic Tasmanian environmental data!</p>
+            <button class="btn" onclick="loadSampleProject()">📋 Load Sample Project</button>
+        </div>
+
+        <!-- Project Details Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📋 Project Details</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" id="project-name" placeholder="Enter project name">
+                    </div>
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <input type="text" id="location" placeholder="Tasmanian address or coordinates">
+                    </div>
+                    <div class="form-group">
+                        <label>Assessor Name *</label>
+                        <input type="text" id="assessor-name" placeholder="Enter assessor name">
+                    </div>
+                    <div class="form-group">
+                        <label>Assessment Date</label>
+                        <input type="date" id="assessment-date">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Project Description</label>
+                        <textarea id="project-description" rows="2" placeholder="Detailed description of the project..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Project Purpose</label>
+                        <textarea id="project-purpose" rows="2" placeholder="Goals and objectives..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Site Information Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📍 Site Information</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Flora & Fauna Observed</label>
+                        <textarea id="flora-fauna" rows="2" placeholder="List species observed..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Soil Type</label>
+                        <select id="soil-type">
+                            <option value="">Select soil type</option>
+                            <option value="sandy">Sandy</option>
+                            <option value="loam">Loam</option>
+                            <option value="clay">Clay</option>
+                            <option value="silty">Silty</option>
+                            <option value="peaty">Peaty</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Waterways</label>
+                        <select id="waterways">
+                            <option value="none">None</option>
+                            <option value="river">River</option>
+                            <option value="stream">Stream</option>
+                            <option value="wetland">Wetland</option>
+                            <option value="lake">Lake</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Distance to Sensitive Ecosystems (km)</label>
+                        <input type="number" id="eco-distance" min="0" step="0.1" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Distance to Critical Infrastructure (km)</label>
+                        <input type="number" id="infra-distance" min="0" step="0.1" value="0">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Land Use History</label>
+                        <textarea id="land-use" rows="2" placeholder="Past land usage..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Current Site Activities</label>
+                        <textarea id="current-activities" rows="2" placeholder="Current activities..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Site Accessibility</label>
+                        <input type="text" id="accessibility" placeholder="Describe accessibility">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Assessment Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>⚠️ Risk Assessment</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="risk-display" class="risk-display risk-low">Overall Risk: Low Risk (0%)</div>
+                <div id="risk-sliders-container"></div>
+            </div>
+        </div>
+
+        <!-- Activities Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🔧 Environmental Activities</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <ul class="activities-grid" id="activities-container"></ul>
+                <button class="btn btn-sm" onclick="toggleAllActivities()" id="toggle-activities-btn">Show More Activities (12 more)</button>
+            </div>
+        </div>
+
+        <!-- Visualizations Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📊 Impact Visualizations</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="radar-chart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="bar-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>💡 Recommendations</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="recommendations-container"></div>
+            </div>
+        </div>
+
+        <!-- Progress Tracker Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📈 Progress Tracker</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar" style="width: 0%">0%</div>
+                </div>
+                <p id="progress-text">Complete risk assessment to track progress</p>
+            </div>
+        </div>
+
+        <!-- Mitigation Measures Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🛠️ Mitigation Measures</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="mitigation-container"></div>
+            </div>
+        </div>
+
+        <!-- Risk Comparison Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📊 Risk Comparison</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="risk-comparison"></div>
+            </div>
+        </div>
+
+        <!-- Long-term Projections Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🔮 Long-term Impact Projections</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="projections-container"></div>
+            </div>
+        </div>
+
+        <!-- Policy Compliance Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>✅ Policy & Regulatory Compliance</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="compliance-container"></div>
+                <div id="compliance-score" style="margin-top: 1rem; padding: 1rem; background: #f9fafb; border-radius: 8px; font-weight: bold;"></div>
+                <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 0.5rem;">* Compliance status is automatically calculated based on risk assessment inputs</p>
+            </div>
+        </div>
+
+        <!-- Budget Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>💰 Budget Estimator</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="form-group">
+                    <label>Project Area (hectares)</label>
+                    <input type="number" id="project-area" min="0.1" step="0.1" value="1">
+                </div>
+                <div id="budget-container"></div>
+            </div>
+        </div>
+
+        <!-- Timeline Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📅 Project Timeline</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="timeline-container"></div>
+                <div class="form-grid" style="margin-top: 1rem;">
+                    <div class="form-group">
+                        <label>New Milestone</label>
+                        <input type="text" id="milestone-name" placeholder="e.g., Site Assessment">
+                    </div>
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date" id="milestone-date">
+                    </div>
+                </div>
+                <button class="btn" onclick="addMilestone()">Add Milestone</button>
+            </div>
+        </div>
+
+        <!-- Stakeholders Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>👥 Stakeholder Management</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" id="stakeholder-role" placeholder="e.g., Project Manager">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="stakeholder-status">
+                            <option value="Pending">Pending</option>
+                            <option value="Confirmed">Confirmed</option>
+                            <option value="In Progress">In Progress</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="stakeholder-email" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="stakeholder-phone" placeholder="+1 234 567 890">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Comments</label>
+                        <textarea id="stakeholder-comments" rows="2" placeholder="Additional notes..."></textarea>
+                    </div>
+                </div>
+                <button class="btn" onclick="addStakeholder()">Add Stakeholder</button>
+                <div id="stakeholder-list"></div>
+                <div class="progress-container" style="margin-top: 1rem;">
+                    <div class="progress-bar" id="stakeholder-progress" style="width: 0%">0%</div>
+                </div>
+                <p id="stakeholder-progress-text">Stakeholder engagement: 0% confirmed</p>
+            </div>
+        </div>
+
+        <!-- Interactive Guidance Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>💬 Interactive Guidance</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="guidance-container"></div>
+            </div>
+        </div>
+
+        <!-- User Feedback Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📝 User Feedback</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <textarea id="user-feedback" rows="3" placeholder="Share your thoughts about this tool..."></textarea>
+                <button class="btn" onclick="submitFeedback()" style="margin-top: 0.75rem;">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- Data Management Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>💾 Data Management</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="btn-group">
+                    <button class="btn" onclick="saveToCSV()">💾 Save to CSV</button>
+                    <button class="btn" onclick="generatePDF()">📄 Generate PDF Report</button>
+                    <button class="btn" onclick="loadFromLocalStorage()">📂 Load Last Session</button>
+                    <button class="btn btn-danger" onclick="resetAllData()">🗑️ Reset All Data</button>
+                </div>
+                <input type="file" id="csv-upload" accept=".csv" style="display: none" onchange="loadFromCSV(this)">
+                <button class="btn" onclick="document.getElementById('csv-upload').click()" style="margin-top: 0.75rem;">📁 Upload CSV File</button>
+                <p style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-gray);">Auto-saves every 30 seconds</p>
+            </div>
+        </div>
+
+        <!-- Location Map Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🗺️ Project Location Map</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="map-controls">
+                    <input type="text" id="address-search" placeholder="Search for an address..." style="flex:1; min-width:200px;">
+                    <button class="btn" onclick="searchAddress()">🔍 Search</button>
+                    <button class="btn" onclick="useMyLocation()">📍 My Location</button>
+                    <button class="btn" onclick="dropMarkerAtCenter()">📌 Drop Marker Here</button>
+                    <button class="btn btn-danger btn-sm" onclick="clearMarker()">✖ Clear Marker</button>
+                </div>
+                <div id="map-container"></div>
+                <div class="map-coords" id="map-coords-display">
+                    <strong>Marker Coordinates:</strong> <span id="coord-display">None set</span>
+                    <span style="margin-left:1rem;"><strong>Address:</strong> <span id="address-display">None</span></span>
+                </div>
+                <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.5rem;">Click on the map to drop a marker. The marker will appear in the PDF report.</p>
+            </div>
+        </div>
+
+        <!-- Tasmania Bioregion Selection Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>📍 Tasmania Bioregion Selector</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <p style="margin-bottom: 0.5rem;">Select the Tasmanian bioregion where your project is located. Risk calculations will be weighted according to conservation significance.</p>
+                <div class="bioregion-grid" id="bioregion-container"></div>
+                <div id="selected-bioregion-info" style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--primary-dark);"></div>
+                <div id="bioregion-risk-impact" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+            </div>
+        </div>
+
+        <!-- EPBC Act Referral Check Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🇦🇺 EPBC Act Referral Check (Federal)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="epbc-container"></div>
+                <p style="font-size: 0.75rem; color: var(--text-gray); margin-top: 0.5rem;">* Matters of National Environmental Significance (MNES) trigger referral requirements under the EPBC Act 1999.</p>
+            </div>
+        </div>
+
+        <!-- Biodiversity Offsets Calculator Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>🔄 Biodiversity Offsets Calculator (Tasmania)</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Area to be cleared (hectares)</label>
+                        <input type="number" id="clear-area" min="0" step="0.01" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Vegetation Type / Conservation Value</label>
+                        <select id="veg-type">
+                            <option value="low">Low Conservation Value (disturbed/weedy)</option>
+                            <option value="medium">Medium Conservation Value (regrowth)</option>
+                            <option value="high">High Conservation Value (old growth)</option>
+                            <option value="critical">Critical / Threatened Ecological Community</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Threatened Species Presence</label>
+                        <select id="threatened-species-select">
+                            <option value="0">None confirmed</option>
+                            <option value="0.5">Possible / Habitat present</option>
+                            <option value="1">Confirmed present (DPIPWE records)</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-gold" onclick="calculateOffsets()">Calculate Offsets Requirement</button>
+                <div id="offsets-result" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Tasmanian Legislation Summary Card -->
+        <div class="card">
+            <div class="card-header" onclick="toggleCard(this)">
+                <h2>⚖️ Tasmanian Legislation Summary</h2>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="card-content">
+                <div id="tas-legislation-summary"></div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <strong>⚠️ Disclaimer:</strong> This tool is for informational purposes only. Users are responsible for ensuring regulatory compliance and accuracy of data provided. Always consult DPIPWE for formal determinations.
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Tasmanian Environmental Impact Assessment Tool | Professional Complete Edition v3.0 | © 2025</p>
+        <p style="font-size: 0.75rem;">Complies with EMPC Act 1994, TSP Act 1995, LUPA 1993, Water Management Act 1999, EPBC Act 1999</p>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION & DATA
+        // ============================================
+        
+        const RISK_METRICS = [
+            { id: "erosion", label: "🌊 Erosion Impact", weight: 0.15 },
+            { id: "vegetation", label: "🌿 Vegetation Damage", weight: 0.15 },
+            { id: "water-quality", label: "💧 Water Quality Impact", weight: 0.12 },
+            { id: "habitat", label: "🦋 Habitat Disruption", weight: 0.12 },
+            { id: "air-quality", label: "🌬️ Air Quality Impact", weight: 0.10 },
+            { id: "noise", label: "🔊 Noise Pollution", weight: 0.10 },
+            { id: "waste", label: "🗑️ Waste Management", weight: 0.10 },
+            { id: "biodiversity", label: "🐾 Biodiversity Loss", weight: 0.08 },
+            { id: "carbon", label: "🌍 Carbon Footprint", weight: 0.08 }
+        ];
+
+        const RESULT_INDICATORS = {
+            erosion: [
+                { max: 20, label: "Stable", color: "#28a745" },
+                { max: 40, label: "Minor Rills", color: "#8bc34a" },
+                { max: 60, label: "Gully Forming", color: "#ffc107" },
+                { max: 80, label: "Active Erosion", color: "#fd7e14" },
+                { max: 100, label: "Severe Gully", color: "#dc3545" }
+            ],
+            vegetation: [
+                { max: 20, label: "Intact", color: "#28a745" },
+                { max: 40, label: "Minor Damage", color: "#8bc34a" },
+                { max: 60, label: "Moderate Loss", color: "#ffc107" },
+                { max: 80, label: "Major Loss", color: "#fd7e14" },
+                { max: 100, label: "Complete Loss", color: "#dc3545" }
+            ],
+            "water-quality": [
+                { max: 20, label: "Pristine", color: "#28a745" },
+                { max: 40, label: "Slightly Turbid", color: "#8bc34a" },
+                { max: 60, label: "Moderate Pollution", color: "#ffc107" },
+                { max: 80, label: "Heavy Pollution", color: "#fd7e14" },
+                { max: 100, label: "Toxic/Dead", color: "#dc3545" }
+            ],
+            habitat: [
+                { max: 20, label: "Intact", color: "#28a745" },
+                { max: 40, label: "Fragmented", color: "#8bc34a" },
+                { max: 60, label: "Degraded", color: "#ffc107" },
+                { max: 80, label: "Severely Degraded", color: "#fd7e14" },
+                { max: 100, label: "Destroyed", color: "#dc3545" }
+            ],
+            "air-quality": [
+                { max: 20, label: "Clean", color: "#28a745" },
+                { max: 40, label: "Slight Haze", color: "#8bc34a" },
+                { max: 60, label: "Moderate Smog", color: "#ffc107" },
+                { max: 80, label: "Heavy Smog", color: "#fd7e14" },
+                { max: 100, label: "Toxic Air", color: "#dc3545" }
+            ],
+            noise: [
+                { max: 20, label: "Ambient", color: "#28a745" },
+                { max: 40, label: "Noticeable", color: "#8bc34a" },
+                { max: 60, label: "Disruptive", color: "#ffc107" },
+                { max: 80, label: "Very Loud", color: "#fd7e14" },
+                { max: 100, label: "Dangerous", color: "#dc3545" }
+            ],
+            waste: [
+                { max: 20, label: "Minimal", color: "#28a745" },
+                { max: 40, label: "Controlled", color: "#8bc34a" },
+                { max: 60, label: "Excessive", color: "#ffc107" },
+                { max: 80, label: "Hazardous", color: "#fd7e14" },
+                { max: 100, label: "Toxic Dump", color: "#dc3545" }
+            ],
+            biodiversity: [
+                { max: 20, label: "Healthy", color: "#28a745" },
+                { max: 40, label: "Slightly Impacted", color: "#8bc34a" },
+                { max: 60, label: "Declining", color: "#ffc107" },
+                { max: 80, label: "Collapsing", color: "#fd7e14" },
+                { max: 100, label: "Extinct", color: "#dc3545" }
+            ],
+            carbon: [
+                { max: 20, label: "Net Zero", color: "#28a745" },
+                { max: 40, label: "Low", color: "#8bc34a" },
+                { max: 60, label: "Moderate", color: "#ffc107" },
+                { max: 80, label: "High", color: "#fd7e14" },
+                { max: 100, label: "Extreme", color: "#dc3545" }
+            ]
+        };
+
+        const ALL_ACTIVITIES = [
+            "🌱 Invasive Species Control", "🌳 Revegetation", "🧱 Erosion Control Structures",
+            "💧 Waterway Restoration", "🦜 Wildlife Habitat Creation", "🐛 Pest Management",
+            "🌲 Forest Management", "💧 Wetland Conservation", "🌾 Sustainable Agriculture",
+            "🌎 Soil Conservation", "💦 Water Conservation", "🔬 Biodiversity Monitoring",
+            "🌿 Carbon Sequestration", "🏭 Pollution Control", "⚡ Renewable Energy",
+            "♻️ Waste Reduction", "👥 Community Engagement", "🌡️ Climate Adaptation",
+            "🌊 Riparian Buffer Zones", "🏔️ Integrated Coastal Management", "📊 Ecosystem Monitoring"
+        ];
+
+        const POLICIES = [
+            { name: "Clean Water Act (CWA)", description: "Regulates discharge of pollutants into water bodies", status: "Compliant", reference: "https://www.epa.gov/cwa-404", criteria: ["water-quality"] },
+            { name: "Endangered Species Act (ESA)", description: "Protects threatened and endangered species and their habitats", status: "Partial", reference: "https://www.fws.gov/endangered/esa-library/index.html", criteria: ["biodiversity", "habitat"] },
+            { name: "Clean Air Act (CAA)", description: "Regulates air emissions from stationary and mobile sources", status: "Compliant", reference: "https://www.epa.gov/clean-air-act-overview", criteria: ["air-quality"] },
+            { name: "Resource Conservation and Recovery Act (RCRA)", description: "Governs management of hazardous and non-hazardous waste", status: "Needs Review", reference: "https://www.epa.gov/rcra", criteria: ["waste"] },
+            { name: "National Environmental Policy Act (NEPA)", description: "Requires environmental impact assessments for federal projects", status: "Compliant", reference: "https://www.epa.gov/nepa", criteria: [] },
+            { name: "Migratory Bird Treaty Act (MBTA)", description: "Protects migratory bird species and their habitats", status: "Partial", reference: "https://www.fws.gov/law/migratory-bird-treaty-act-1918", criteria: ["habitat", "biodiversity"] },
+            { name: "Wetlands Protection Regulations", description: "Protects wetlands from development and degradation", status: "Partial", reference: "https://www.epa.gov/wetlands", criteria: ["habitat", "water-quality"] },
+            { name: "Coastal Zone Management Act (CZMA)", description: "Protects coastal resources and manages development", status: "Not Applicable", reference: "https://coast.noaa.gov/czm/act/", criteria: [] },
+            { name: "Noise Control Act", description: "Regulates noise pollution and establishes noise emission standards", status: "Compliant", reference: "https://www.epa.gov/clean-air-act-overview/noise-pollution", criteria: ["noise"] },
+            { name: "Soil Conservation and Protection Standards", description: "Promotes soil conservation practices and erosion control", status: "Partial", reference: "https://www.nrcs.usda.gov/", criteria: ["erosion"] },
+            { name: "Carbon Emission Reduction Targets (Paris Agreement)", description: "International commitment to reduce greenhouse gas emissions", status: "In Progress", reference: "https://unfccc.int/process-and-meetings/the-paris-agreement", criteria: ["carbon"] },
+            { name: "Biodiversity Action Plan", description: "Strategy for preserving and enhancing biodiversity", status: "Needs Review", reference: "https://www.cbd.int/nbsap/", criteria: ["biodiversity"] },
+            { name: "Sustainable Development Goals (SDG) - Environmental", description: "UN goals for sustainable environmental practices", status: "Compliant", reference: "https://sdgs.un.org/goals", criteria: [] },
+            { name: "Local Zoning and Land Use Regulations", description: "Local ordinances governing land development and use", status: "Compliant", reference: "#", criteria: [] },
+            { name: "Stormwater Management Requirements", description: "Regulations for managing stormwater runoff", status: "Partial", reference: "https://www.epa.gov/npdes/stormwater-discharges-municipal-sources", criteria: ["water-quality"] },
+            { name: "Environmental Justice Executive Order", description: "Ensures fair treatment of all communities regarding environmental impacts", status: "Compliant", reference: "https://www.epa.gov/environmentaljustice", criteria: [] }
+        ];
+
+        const TAS_BIOREGIONS = [
+            { name: "King Island", multiplier: 1.3, description: "Island ecosystems, high endemism, seabird colonies" },
+            { name: "Furneaux Group", multiplier: 1.3, description: "Island group, significant seabird and shorebird habitat" },
+            { name: "Flinders Island", multiplier: 1.2, description: "Coastal heathlands, priority threatened species" },
+            { name: "Ben Lomond", multiplier: 1.4, description: "Alpine vegetation, endemic flora and fauna" },
+            { name: "Northern Slopes", multiplier: 1.0, description: "Agricultural areas, modified landscapes (baseline)" },
+            { name: "Central Highlands", multiplier: 1.5, description: "Alpine and subalpine, highest conservation value" },
+            { name: "West Coast", multiplier: 1.4, description: "Wilderness areas, old-growth forests, World Heritage" },
+            { name: "Southern Ranges", multiplier: 1.3, description: "Tall wet forests, threatened species habitat" },
+            { name: "South East", multiplier: 1.1, description: "Urban fringe, coastal development pressure" }
+        ];
+
+        const TAS_LEGISLATION_SUMMARY = [
+            { name: "EMPC Act 1994", description: "Environmental Management and Pollution Control Act - Primary environmental legislation governing pollution, waste, and environmental harm" },
+            { name: "TSP Act 1995", description: "Threatened Species Protection Act - Protects listed threatened species and their habitats" },
+            { name: "LUPA 1993", description: "Land Use Planning and Approvals Act - Requires planning permits and environmental assessment" },
+            { name: "Water Management Act 1999", description: "Regulates water abstraction, dams, and waterway impacts" },
+            { name: "Forest Practices Act 1985", description: "Governs forest management and native vegetation removal" },
+            { name: "Aboriginal Heritage Act 1975", description: "Protects Aboriginal cultural heritage sites and artefacts" },
+            { name: "Nature Conservation Act 2002", description: "Protects reserved lands, parks, and wildlife" }
+        ];
+
+        // ============================================
+        // SAMPLE PROJECT DATA
+        // ============================================
+        const SAMPLE_PROJECT = {
+            projectName: "Cradle Mountain Visitor Centre Expansion",
+            location: "Cradle Mountain National Park, Tasmania",
+            assessorName: "Dr. Sarah Mitchell - Senior Environmental Consultant",
+            assessmentDate: "2025-03-15",
+            projectDescription: "Expansion of the existing visitor centre facilities at Cradle Mountain to accommodate increasing visitor numbers. Project includes new interpretation centre, cafe, retail space, and upgraded parking facilities. Total footprint approximately 2.5 hectares within the national park boundary.",
+            projectPurpose: "To enhance visitor experience, improve safety, and reduce environmental impact through consolidated facilities. The project aims to reduce vehicle congestion, improve waste management, and provide education about the unique alpine environment.",
+            floraFauna: "Eucalyptus coccifera (Snow Gum), Richea scoparia (Scoparia), Orites acicularis (Yellow Orites), Nothofagus gunnii (Deciduous Beech). Fauna observed: Thylogale billardierii (Tasmanian Pademelon), Sarcophilus harrisii (Tasmanian Devil), Dasyurus maculatus (Spotted-tailed Quoll), Aquila audax (Wedge-tailed Eagle), numerous endemic invertebrates.",
+            soilType: "peaty",
+            waterways: "stream",
+            ecoDistance: "0.2",
+            infraDistance: "5.0",
+            landUse: "Previously disturbed by existing visitor facilities (1970s construction). Surrounding area is pristine alpine woodland with high conservation value.",
+            currentActivities: "Existing visitor centre operates daily with approximately 500-800 visitors per day during peak season. Current facilities are inadequate for visitor numbers.",
+            accessibility: "Site is accessible via Cradle Mountain Road. Parking limited to 200 spaces. Accessible pathways exist to current facilities.",
+            riskValues: {
+                erosion: 75,
+                vegetation: 80,
+                "water-quality": 65,
+                habitat: 85,
+                "air-quality": 40,
+                noise: 55,
+                waste: 45,
+                biodiversity: 82,
+                carbon: 50
+            },
+            selectedActivities: [
+                "🌱 Invasive Species Control",
+                "🌳 Revegetation",
+                "🧱 Erosion Control Structures",
+                "💧 Waterway Restoration",
+                "🦜 Wildlife Habitat Creation",
+                "🌲 Forest Management",
+                "💧 Wetland Conservation",
+                "🔬 Biodiversity Monitoring",
+                "🌿 Carbon Sequestration",
+                "♻️ Waste Reduction",
+                "👥 Community Engagement"
+            ],
+            stakeholders: [
+                { id: 1, role: "DPIPWE Environmental Officer", status: "Confirmed", email: "environment@dpipwe.tas.gov.au", phone: "(03) 6165 3000", comments: "Primary regulatory contact" },
+                { id: 2, role: "Cradle Mountain Park Manager", status: "Confirmed", email: "manager.cradle@parks.tas.gov.au", phone: "(03) 6492 1133", comments: "On-site operations lead" },
+                { id: 3, role: "Traditional Owner Representative", status: "Pending", email: "cultural@tacinc.com.au", phone: "(03) 6331 0100", comments: "Aboriginal cultural heritage consultation required" },
+                { id: 4, role: "Environmental Consultant", status: "Confirmed", email: "s.mitchell@enviroconsult.tas.au", phone: "0417 836 295", comments: "Lead assessor for EIA" },
+                { id: 5, role: "Community Liaison Officer", status: "In Progress", email: "community@cradlecoast.tas.gov.au", phone: "(03) 6492 1333", comments: "Managing community engagement" }
+            ],
+            milestones: [
+                { name: "📋 Initial Site Assessment", date: "2025-01-10", editable: false },
+                { name: "📊 Environmental Data Collection", date: "2025-02-15", editable: false },
+                { name: "📝 Draft Report Generation", date: "2025-03-20", editable: false },
+                { name: "✅ Stakeholder Review", date: "2025-04-05", editable: false },
+                { name: "📄 Final Report Submission", date: "2025-04-30", editable: false },
+                { name: "🏗️ Construction Commencement", date: "2025-06-01", editable: true },
+                { name: "🌿 Revegetation Complete", date: "2026-03-01", editable: true }
+            ],
+            projectArea: 2.5,
+            selectedBioregion: "Central Highlands",
+            mapData: {
+                lat: -41.6863,
+                lng: 145.9500,
+                address: "Cradle Mountain National Park, Tasmania 7306, Australia"
+            }
+        };
+
+        // ============================================
+        // STATE
+        // ============================================
+        let stakeholders = [];
+        let milestones = [
+            { name: "📋 Initial Site Assessment", date: "", editable: false },
+            { name: "📊 Environmental Data Collection", date: "", editable: false },
+            { name: "📝 Draft Report Generation", date: "", editable: false },
+            { name: "✅ Stakeholder Review", date: "", editable: false },
+            { name: "📄 Final Report Submission", date: "", editable: false }
+        ];
+        let previousRiskData = null;
+        let radarChart = null;
+        let barChart = null;
+        let selectedBioregion = null;
+        let currentMultiplier = 1.0;
+
+        // Map state
+        let map = null;
+        let marker = null;
+        let mapInitialized = false;
+        let markerLat = null;
+        let markerLng = null;
+        let markerAddress = '';
+
+        // ============================================
+        // SAMPLE PROJECT LOADER
+        // ============================================
+        function loadSampleProject() {
+            try {
+                // Show loading notification
+                showNotification('Loading sample project...', 'info');
+                
+                // 1. Project Details
+                document.getElementById('project-name').value = SAMPLE_PROJECT.projectName;
+                document.getElementById('location').value = SAMPLE_PROJECT.location;
+                document.getElementById('assessor-name').value = SAMPLE_PROJECT.assessorName;
+                document.getElementById('assessment-date').value = SAMPLE_PROJECT.assessmentDate;
+                document.getElementById('project-description').value = SAMPLE_PROJECT.projectDescription;
+                document.getElementById('project-purpose').value = SAMPLE_PROJECT.projectPurpose;
+                
+                // 2. Site Information
+                document.getElementById('flora-fauna').value = SAMPLE_PROJECT.floraFauna;
+                document.getElementById('soil-type').value = SAMPLE_PROJECT.soilType;
+                document.getElementById('waterways').value = SAMPLE_PROJECT.waterways;
+                document.getElementById('eco-distance').value = SAMPLE_PROJECT.ecoDistance;
+                document.getElementById('infra-distance').value = SAMPLE_PROJECT.infraDistance;
+                document.getElementById('land-use').value = SAMPLE_PROJECT.landUse;
+                document.getElementById('current-activities').value = SAMPLE_PROJECT.currentActivities;
+                document.getElementById('accessibility').value = SAMPLE_PROJECT.accessibility;
+                
+                // 3. Risk Sliders
+                RISK_METRICS.forEach(m => {
+                    const slider = document.getElementById(`slider-${m.id}`);
+                    const value = SAMPLE_PROJECT.riskValues[m.id] || 0;
+                    if (slider) {
+                        slider.value = value;
+                        document.getElementById(`value-${m.id}`).textContent = value;
+                        updateResultIndicator(m.id, value);
+                    }
+                });
+                
+                // 4. Activities - uncheck all first
+                document.querySelectorAll('#activities-container input[type="checkbox"]').forEach(cb => {
+                    cb.checked = false;
+                });
+                // Then check the selected ones
+                document.querySelectorAll('#activities-container input[type="checkbox"]').forEach(cb => {
+                    if (SAMPLE_PROJECT.selectedActivities.includes(cb.value)) {
+                        cb.checked = true;
+                    }
+                });
+                // Make sure hidden activities are visible if checked
+                document.querySelectorAll('.hidden-activity').forEach(el => {
+                    const cb = el.querySelector('input[type="checkbox"]');
+                    if (cb && SAMPLE_PROJECT.selectedActivities.includes(cb.value)) {
+                        el.style.display = 'flex';
+                    }
+                });
+                // Update the toggle button text
+                const hidden = document.querySelectorAll('.hidden-activity');
+                const visibleHidden = Array.from(hidden).filter(el => el.style.display !== 'none');
+                const btn = document.getElementById('toggle-activities-btn');
+                if (visibleHidden.length > 0) {
+                    btn.textContent = `Show Less Activities (${hidden.length - visibleHidden.length} hidden)`;
+                } else {
+                    btn.textContent = `Show More Activities (${hidden.length} more)`;
+                }
+                
+                // 5. Budget Area
+                document.getElementById('project-area').value = SAMPLE_PROJECT.projectArea;
+                
+                // 6. Stakeholders
+                stakeholders = SAMPLE_PROJECT.stakeholders.map(s => ({ ...s, id: Date.now() + Math.random() * 1000 }));
+                renderStakeholders();
+                
+                // 7. Milestones
+                milestones = SAMPLE_PROJECT.milestones.map(m => ({ ...m }));
+                renderTimeline();
+                
+                // 8. Bioregion
+                const bioregion = TAS_BIOREGIONS.find(b => b.name === SAMPLE_PROJECT.selectedBioregion);
+                if (bioregion) {
+                    selectBioregion(bioregion.name, bioregion.multiplier);
+                }
+                
+                // 9. Map Marker
+                if (SAMPLE_PROJECT.mapData && mapInitialized) {
+                    setTimeout(() => {
+                        setMarker(SAMPLE_PROJECT.mapData.lat, SAMPLE_PROJECT.mapData.lng);
+                        markerAddress = SAMPLE_PROJECT.mapData.address;
+                        document.getElementById('address-display').textContent = SAMPLE_PROJECT.mapData.address;
+                        document.getElementById('location').value = SAMPLE_PROJECT.mapData.address;
+                        saveMarkerToStorage();
+                    }, 500);
+                } else if (SAMPLE_PROJECT.mapData) {
+                    // Store for when map initializes
+                    const savedMarker = {
+                        lat: SAMPLE_PROJECT.mapData.lat,
+                        lng: SAMPLE_PROJECT.mapData.lng,
+                        address: SAMPLE_PROJECT.mapData.address
+                    };
+                    localStorage.setItem('eia_map_marker', JSON.stringify(savedMarker));
+                }
+                
+                // 10. Update all calculations
+                updateAllCalculations();
+                
+                // 11. Save to localStorage
+                saveToLocalStorage();
+                
+                showNotification('✅ Sample project loaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error loading sample project:', error);
+                showNotification('Error loading sample project. Please check the console.', 'error');
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeRiskSliders();
+            initializeActivities();
+            initializeMitigationMeasures();
+            initializeGuidance();
+            initializeCharts();
+            loadSavedData();
+            updateAllCalculations();
+            initializeBioregions();
+            initializeTasLegislationSummary();
+            document.getElementById('assessment-date').valueAsDate = new Date();
+            
+            RISK_METRICS.forEach(metric => {
+                const slider = document.getElementById(`slider-${metric.id}`);
+                if (slider) {
+                    slider.addEventListener('input', () => {
+                        const val = parseInt(slider.value);
+                        document.getElementById(`value-${metric.id}`).textContent = val;
+                        updateResultIndicator(metric.id, val);
+                        updateAllCalculations();
+                        updateEPBCReferral();
+                    });
+                }
+            });
+            
+            document.getElementById('project-area').addEventListener('input', () => updateBudget());
+            renderTimeline();
+            renderStakeholders();
+            renderRiskComparison();
+            renderProjections();
+            renderCompliance();
+            
+            // Initialize map after a small delay to ensure DOM is ready
+            setTimeout(initMap, 800);
+            
+            setInterval(saveToLocalStorage, 30000);
+            showNotification('Tasmanian EIA Tool Ready - Click "Load Sample Project" to see it in action!', 'success');
+        });
+
+        // ============================================
+        // MAP FUNCTIONS - FIXED
+        // ============================================
+        function initMap() {
+            if (mapInitialized) return;
+            
+            const container = document.getElementById('map-container');
+            if (!container) {
+                console.error('Map container not found');
+                return;
+            }
+            
+            // Check if container is visible
+            if (container.offsetParent === null) {
+                // Container is hidden, wait and retry
+                setTimeout(initMap, 500);
+                return;
+            }
+            
+            try {
+                // Default to Tasmania center
+                const defaultLat = -42.0;
+                const defaultLng = 146.5;
+                
+                // Force container to have a size
+                container.style.height = '500px';
+                container.style.width = '100%';
+                container.style.display = 'block';
+                
+                map = L.map('map-container', {
+                    center: [defaultLat, defaultLng],
+                    zoom: 7,
+                    zoomControl: true
+                });
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Click to drop marker
+                map.on('click', function(e) {
+                    const lat = e.latlng.lat;
+                    const lng = e.latlng.lng;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng);
+                });
+                
+                mapInitialized = true;
+                
+                // Force a resize after a moment to ensure proper rendering
+                setTimeout(() => {
+                    if (map) {
+                        map.invalidateSize();
+                        console.log('Map size invalidated');
+                    }
+                }, 300);
+                
+                // Also invalidate on window resize
+                window.addEventListener('resize', function() {
+                    if (map) {
+                        map.invalidateSize();
+                    }
+                });
+                
+                // Load saved marker from localStorage
+                const savedMarker = localStorage.getItem('eia_map_marker');
+                if (savedMarker) {
+                    try {
+                        const data = JSON.parse(savedMarker);
+                        if (data.lat && data.lng) {
+                            setTimeout(() => {
+                                setMarker(data.lat, data.lng);
+                                if (data.address) {
+                                    markerAddress = data.address;
+                                    document.getElementById('address-display').textContent = data.address;
+                                }
+                                if (data.address) {
+                                    document.getElementById('location').value = data.address;
+                                } else if (data.lat && data.lng) {
+                                    document.getElementById('location').value = `${data.lat}, ${data.lng}`;
+                                }
+                            }, 400);
+                        }
+                    } catch(e) {
+                        console.error('Error loading saved marker:', e);
+                    }
+                }
+                
+                console.log('Map initialized successfully');
+            } catch (e) {
+                console.error('Error initializing map:', e);
+            }
+        }
+
+        function setMarker(lat, lng) {
+            if (!map) {
+                console.error('Map not initialized');
+                return;
+            }
+            
+            markerLat = lat;
+            markerLng = lng;
+            
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            
+            marker = L.marker([lat, lng], {
+                draggable: true
+            }).addTo(map);
+            
+            marker.on('dragend', function(e) {
+                const pos = marker.getLatLng();
+                markerLat = pos.lat;
+                markerLng = pos.lng;
+                updateCoordDisplay();
+                reverseGeocode(pos.lat, pos.lng);
+                saveMarkerToStorage();
+            });
+            
+            map.setView([lat, lng], 14);
+            updateCoordDisplay();
+            saveMarkerToStorage();
+        }
+
+        function updateCoordDisplay() {
+            if (markerLat !== null && markerLng !== null) {
+                document.getElementById('coord-display').textContent = `${markerLat.toFixed(6)}, ${markerLng.toFixed(6)}`;
+                const address = document.getElementById('address-display').textContent;
+                if (address && address !== 'None') {
+                    document.getElementById('location').value = address;
+                } else {
+                    document.getElementById('location').value = `${markerLat.toFixed(6)}, ${markerLng.toFixed(6)}`;
+                }
+            }
+        }
+
+        function reverseGeocode(lat, lng) {
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        markerAddress = data.display_name;
+                        document.getElementById('address-display').textContent = data.display_name;
+                        document.getElementById('location').value = data.display_name;
+                        saveMarkerToStorage();
+                    }
+                })
+                .catch(() => {
+                    // Silently fail - coordinates still work
+                });
+        }
+
+        function searchAddress() {
+            const query = document.getElementById('address-search').value.trim();
+            if (!query) {
+                showNotification('Please enter an address to search', 'error');
+                return;
+            }
+            
+            showNotification('Searching...', 'info');
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lng = parseFloat(data[0].lon);
+                        setMarker(lat, lng);
+                        markerAddress = data[0].display_name;
+                        document.getElementById('address-display').textContent = data[0].display_name;
+                        document.getElementById('location').value = data[0].display_name;
+                        saveMarkerToStorage();
+                        showNotification('Location found!', 'success');
+                    } else {
+                        showNotification('Address not found', 'error');
+                    }
+                })
+                .catch(() => {
+                    showNotification('Search failed. Please try again.', 'error');
+                });
+        }
+
+        function useMyLocation() {
+            if (!map) {
+                showNotification('Map not initialized. Please expand the map card first.', 'error');
+                ensureMapVisible();
+                setTimeout(() => {
+                    if (map) {
+                        // Retry after map is ready
+                        useMyLocation();
+                    }
+                }, 600);
+                return;
+            }
+            
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by your browser', 'error');
+                return;
+            }
+            
+            showNotification('Getting your location...', 'info');
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    setMarker(lat, lng);
+                    reverseGeocode(lat, lng);
+                    showNotification('Location found!', 'success');
+                },
+                function(error) {
+                    showNotification('Unable to get your location. Please check permissions.', 'error');
+                    console.error('Geolocation error:', error);
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+
+        function dropMarkerAtCenter() {
+            if (!map) {
+                showNotification('Map not initialized. Please expand the map card first.', 'error');
+                // Try to initialize the map
+                ensureMapVisible();
+                setTimeout(() => {
+                    if (map) {
+                        const center = map.getCenter();
+                        setMarker(center.lat, center.lng);
+                        reverseGeocode(center.lat, center.lng);
+                        showNotification('Marker dropped at map center', 'success');
+                    } else {
+                        showNotification('Could not initialize map. Please refresh the page.', 'error');
+                    }
+                }, 600);
+                return;
+            }
+            const center = map.getCenter();
+            setMarker(center.lat, center.lng);
+            reverseGeocode(center.lat, center.lng);
+            showNotification('Marker dropped at map center', 'success');
+        }
+
+        function clearMarker() {
+            if (marker) {
+                map.removeLayer(marker);
+                marker = null;
+            }
+            markerLat = null;
+            markerLng = null;
+            markerAddress = '';
+            document.getElementById('coord-display').textContent = 'None set';
+            document.getElementById('address-display').textContent = 'None';
+            localStorage.removeItem('eia_map_marker');
+            showNotification('Marker cleared', 'info');
+        }
+
+        function saveMarkerToStorage() {
+            if (markerLat !== null && markerLng !== null) {
+                const data = {
+                    lat: markerLat,
+                    lng: markerLng,
+                    address: markerAddress || document.getElementById('address-display').textContent
+                };
+                localStorage.setItem('eia_map_marker', JSON.stringify(data));
+            }
+        }
+
+        function getMapData() {
+            if (markerLat !== null && markerLng !== null) {
+                return {
+                    lat: markerLat,
+                    lng: markerLng,
+                    address: markerAddress || document.getElementById('address-display').textContent || 'Location on map'
+                };
+            }
+            return null;
+        }
+
+        // ============================================
+        // RISK SLIDERS WITH RESULT INDICATORS
+        // ============================================
+        function initializeRiskSliders() {
+            const container = document.getElementById('risk-sliders-container');
+            const criteriaMap = {
+                erosion: "0: Stable soils | 100: Active gully erosion",
+                vegetation: "0: Intact native vegetation | 100: Complete vegetation loss",
+                "water-quality": "0: Clear water | 100: Heavy contamination",
+                habitat: "0: Intact habitat | 100: Total destruction",
+                "air-quality": "0: Clean air | 100: Heavy smog",
+                noise: "0: Ambient noise | 100: Extreme noise",
+                waste: "0: No waste | 100: Hazardous waste",
+                biodiversity: "0: Healthy ecosystem | 100: Biodiversity collapse",
+                carbon: "0: Net zero | 100: Extreme emissions"
+            };
+
+            container.innerHTML = RISK_METRICS.map(metric => `
+                <div class="slider-group">
+                    <div class="slider-header">
+                        <label>${metric.label}</label>
+                        <span class="slider-value" id="value-${metric.id}">0</span>
+                    </div>
+                    <input type="range" id="slider-${metric.id}" min="0" max="100" value="0" step="1">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                        <span class="slider-criteria">${criteriaMap[metric.id]}</span>
+                        <span class="slider-result-indicator" id="result-${metric.id}">Stable</span>
+                    </div>
+                </div>
+            `).join('');
+
+            RISK_METRICS.forEach(metric => updateResultIndicator(metric.id, 0));
+        }
+
+        function updateResultIndicator(metricId, value) {
+            const indicators = RESULT_INDICATORS[metricId];
+            if (!indicators) return;
+            let label = "Unknown";
+            let color = "#6c757d";
+            for (const ind of indicators) {
+                if (value <= ind.max) {
+                    label = ind.label;
+                    color = ind.color;
+                    break;
+                }
+            }
+            const el = document.getElementById(`result-${metricId}`);
+            if (el) {
+                el.textContent = label;
+                el.style.background = color;
+                el.style.color = "#fff";
+            }
+        }
+
+        // ============================================
+        // TASMANIA-SPECIFIC FUNCTIONS
+        // ============================================
+        function initializeBioregions() {
+            const container = document.getElementById('bioregion-container');
+            container.innerHTML = TAS_BIOREGIONS.map(b => `
+                <button class="bioregion-btn" onclick="selectBioregion('${b.name}', ${b.multiplier})">
+                    ${b.name} <span style="font-size:0.7rem;">(${b.multiplier}x)</span>
+                </button>
+            `).join('');
+        }
+
+        function selectBioregion(name, multiplier) {
+            selectedBioregion = name;
+            currentMultiplier = multiplier;
+            document.querySelectorAll('.bioregion-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent.includes(name)) btn.classList.add('selected');
+            });
+            const info = TAS_BIOREGIONS.find(b => b.name === name);
+            document.getElementById('selected-bioregion-info').innerHTML = `✓ Selected: ${name} - Risk multiplier: ${multiplier}x applied to budget and risk weighting`;
+            document.getElementById('bioregion-risk-impact').innerHTML = `<span style="color:var(--warning);">⚠️ ${info.description} - Enhanced mitigation may be required.</span>`;
+            updateAllCalculations();
+            updateEPBCReferral();
+            showNotification(`Bioregion set to ${name} (${multiplier}x)`, 'success');
+        }
+
+        function updateEPBCReferral() {
+            const container = document.getElementById('epbc-container');
+            if (!container) return;
+            const riskScore = calculateTotalRisk();
+            const biodiversityRisk = parseFloat(document.getElementById(`slider-biodiversity`)?.value) || 0;
+            const habitatRisk = parseFloat(document.getElementById(`slider-habitat`)?.value) || 0;
+            const vegetationRisk = parseFloat(document.getElementById(`slider-vegetation`)?.value) || 0;
+            let needsReferral = false;
+            let reasons = [];
+            if (biodiversityRisk > 60 || habitatRisk > 60) { needsReferral = true; reasons.push('Threatened species/habitat impact exceeds threshold'); }
+            if (vegetationRisk > 70) { needsReferral = true; reasons.push('Significant native vegetation clearance'); }
+            if (riskScore > 70 && selectedBioregion && (selectedBioregion === 'Central Highlands' || selectedBioregion === 'West Coast')) {
+                needsReferral = true; reasons.push('High risk in high-conservation bioregion');
+            }
+            if (needsReferral) {
+                container.innerHTML = `
+                    <div style="padding:1rem; background:#f8d7da; border-radius:8px; border-left:4px solid var(--danger);">
+                        <strong style="color:var(--danger);">⚠️ EPBC ACT REFERRAL LIKELY REQUIRED</strong>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">This project may impact Matters of National Environmental Significance (MNES).</p>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">Reasons: ${reasons.join('; ')}</p>
+                        <p style="margin-top:0.5rem; font-size:0.75rem;">Contact: Department of Climate Change, Energy, the Environment and Water<br>Referral portal: https://epbcreferrals.awe.gov.au</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div style="padding:1rem; background:#d4edda; border-radius:8px; border-left:4px solid var(--success);">
+                        <strong style="color:var(--success);">✓ EPBC Act Referral Not Indicated</strong>
+                        <p style="margin-top:0.5rem; font-size:0.875rem;">Based on current assessment, an EPBC Act referral does not appear to be required.</p>
+                        <p style="margin-top:0.5rem; font-size:0.75rem;">Note: Final determination requires professional ecological advice.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function calculateOffsets() {
+            const area = parseFloat(document.getElementById('clear-area').value) || 0;
+            const vegType = document.getElementById('veg-type').value;
+            const threatenedFactor = parseFloat(document.getElementById('threatened-species-select').value);
+            let multiplier = 1; let vegDescription = '';
+            switch(vegType) {
+                case 'low': multiplier = 2; vegDescription = 'Low Conservation Value'; break;
+                case 'medium': multiplier = 5; vegDescription = 'Medium Conservation Value'; break;
+                case 'high': multiplier = 10; vegDescription = 'High Conservation Value'; break;
+                case 'critical': multiplier = 15; vegDescription = 'Critical / TEC'; break;
+                default: multiplier = 2;
+            }
+            const totalMultiplier = multiplier * (1 + threatenedFactor) * currentMultiplier;
+            const offsetHectares = area * totalMultiplier;
+            const estimatedCost = offsetHectares * 25000;
+            const result = document.getElementById('offsets-result');
+            result.style.display = 'block';
+            result.innerHTML = `
+                <div class="offsets-result">
+                    <h4 style="color:var(--primary); margin-bottom:1rem;">📊 Biodiversity Offsets Calculation</h4>
+                    <div style="display:grid; gap:0.75rem;">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Area to be cleared:</strong> <span>${area.toFixed(2)} ha</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Vegetation type:</strong> <span>${vegDescription}</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Base multiplier:</strong> <span>${multiplier}:1</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Threatened species factor:</strong> <span>+${(threatenedFactor * 100)}%</span></div>
+                        ${selectedBioregion ? `<div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>Bioregion multiplier:</strong> <span>${currentMultiplier}x (${selectedBioregion})</span></div>` : ''}
+                        <div style="padding-top:0.75rem; border-top:2px solid var(--border); display:flex; justify-content:space-between; flex-wrap:wrap; font-weight:bold;"><span>Total offset required:</span> <span style="color:var(--primary);">${offsetHectares.toFixed(2)} ha</span></div>
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><span>Estimated offset cost:</span> <span>$${estimatedCost.toLocaleString()}</span></div>
+                    </div>
+                    <p style="margin-top:1rem; font-size:0.7rem; color:var(--text-gray);">* Based on Tasmanian Biodiversity Offsets Policy (DPIPWE).</p>
+                </div>
+            `;
+            showNotification('Offsets calculation complete', 'success');
+        }
+
+        function initializeTasLegislationSummary() {
+            const container = document.getElementById('tas-legislation-summary');
+            container.innerHTML = `
+                <div class="form-grid">
+                    ${TAS_LEGISLATION_SUMMARY.map(leg => `
+                        <div style="padding:0.75rem; background:#f9fafb; border-radius:8px; border-left:3px solid var(--primary);">
+                            <strong style="color:var(--primary-dark);">${leg.name}</strong>
+                            <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.25rem;">${leg.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <p style="margin-top:1rem; font-size:0.75rem; color:var(--text-gray);">Refer to DPIPWE for formal interpretation.</p>
+            `;
+        }
+
+        // ============================================
+        // CORE FUNCTIONS
+        // ============================================
+        function initializeActivities() {
+            const container = document.getElementById('activities-container');
+            const visible = ALL_ACTIVITIES.slice(0, 8);
+            const hidden = ALL_ACTIVITIES.slice(8);
+            container.innerHTML = visible.map(a => `<li><input type="checkbox" value="${a}" onchange="updateAllCalculations()"><span>${a}</span></li>`).join('');
+            hidden.forEach(a => {
+                container.innerHTML += `<li class="hidden-activity"><input type="checkbox" value="${a}" onchange="updateAllCalculations()"><span>${a}</span></li>`;
+            });
+        }
+
+        function toggleAllActivities() {
+            const hidden = document.querySelectorAll('.hidden-activity');
+            const btn = document.getElementById('toggle-activities-btn');
+            let visibleCount = 0;
+            hidden.forEach(el => {
+                if (el.style.display === 'none' || !el.style.display) {
+                    el.style.display = 'flex'; visibleCount++;
+                } else {
+                    el.style.display = 'none';
+                }
+            });
+            const totalHidden = hidden.length;
+            btn.textContent = visibleCount > 0 ? `Show Less Activities (${totalHidden - visibleCount} hidden)` : `Show More Activities (${totalHidden} more)`;
+        }
+
+        function initializeMitigationMeasures() {
+            const measures = [
+                { icon: "🏗️", name: "Erosion Control", desc: "Install sediment traps, silt fences, and check dams to prevent soil loss." },
+                { icon: "🌱", name: "Revegetation", desc: "Replant native vegetation in disturbed areas to restore ecosystem function." },
+                { icon: "💧", name: "Water Protection", desc: "Establish riparian buffer zones and implement water quality monitoring." },
+                { icon: "🦋", name: "Habitat Conservation", desc: "Create wildlife corridors and protect critical habitat areas." },
+                { icon: "🌍", name: "Carbon Reduction", desc: "Adopt renewable energy sources and implement energy efficiency measures." },
+                { icon: "♻️", name: "Waste Management", desc: "Implement recycling programs and reduce waste generation." },
+                { icon: "🔇", name: "Noise Control", desc: "Use noise barriers and schedule activities during off-peak hours." },
+                { icon: "🌬️", name: "Air Quality", desc: "Install dust control systems and monitor air quality regularly." }
+            ];
+            const container = document.getElementById('mitigation-container');
+            container.innerHTML = measures.map(m => `
+                <div style="margin-bottom:1rem; padding:1rem; background:#f9fafb; border-radius:8px;">
+                    <strong style="color:var(--primary);">${m.icon} ${m.name}</strong>
+                    <p style="margin-top:0.5rem; font-size:0.875rem;">${m.desc}</p>
+                </div>
+            `).join('');
+        }
+
+        function initializeGuidance() {
+            const tips = [
+                "📋 Start by filling out project details and site information",
+                "⚖️ Adjust risk sliders based on site observations",
+                "🌏 Select a Tasmanian bioregion for accurate risk weighting",
+                "💡 Review recommendations that appear automatically",
+                "📊 Use charts to visualize impact distribution",
+                "✅ Policy compliance updates automatically based on risk levels",
+                "👥 Add stakeholders to track engagement",
+                "📅 Set milestones to monitor project timeline",
+                "💰 Budget updates automatically based on risk levels and bioregion",
+                "🇦🇺 Check EPBC Act referral requirements",
+                "🗺️ Use the map to pinpoint your project location",
+                "📄 Generate PDF reports for documentation"
+            ];
+            const container = document.getElementById('guidance-container');
+            container.innerHTML = tips.map(tip => `
+                <div style="padding:0.5rem; border-left:3px solid var(--primary); margin-bottom:0.5rem; background:#f9fafb; border-radius:4px;">${tip}</div>
+            `).join('');
+        }
+
+        function initializeCharts() {
+            const ctxRadar = document.getElementById('radar-chart').getContext('2d');
+            const ctxBar = document.getElementById('bar-chart').getContext('2d');
+            radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: { labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g,'').trim()), datasets: [{ label: 'Impact Level (%)', data: RISK_METRICS.map(()=>0), backgroundColor: 'rgba(42,111,75,0.2)', borderColor: '#2a6f4b', borderWidth: 2, pointBackgroundColor: '#2a6f4b', pointBorderColor: '#fff', pointHoverRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20 } } } }
+            });
+            barChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: { labels: RISK_METRICS.map(m => m.label.replace(/[^a-zA-Z\s]/g,'').trim()), datasets: [{ label: 'Impact Level (%)', data: RISK_METRICS.map(()=>0), backgroundColor: (ctx) => { const v = ctx.dataset.data[ctx.dataIndex]; return v > 70 ? '#c84f43' : v > 40 ? '#f0c75e' : '#6ba583'; }, borderRadius: 8 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: 'Impact (%)' } } } }
+            });
+        }
+
+        function calculateTotalRisk() {
+            let total = 0;
+            RISK_METRICS.forEach(m => { const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0; total += v * m.weight; });
+            return Math.round(total);
+        }
+
+        function getRiskLevel(score) {
+            if (score <= 30) return { level: 'Low Risk', class: 'risk-low', color: '#6ba583' };
+            if (score <= 60) return { level: 'Moderate Risk', class: 'risk-moderate', color: '#f0c75e' };
+            return { level: 'High Risk', class: 'risk-high', color: '#c84f43' };
+        }
+
+        function updateAllCalculations() {
+            updateRiskDisplay();
+            updateCharts();
+            updateRecommendations();
+            updateProgress();
+            updateBudget();
+            updateRiskComparison();
+            updateProjections();
+            renderCompliance();
+            updateEPBCReferral();
+        }
+
+        function updateRiskDisplay() {
+            const score = calculateTotalRisk();
+            const risk = getRiskLevel(score);
+            const display = document.getElementById('risk-display');
+            display.textContent = `Overall Risk: ${risk.level} (${score}%)${selectedBioregion ? ` | Bioregion: ${selectedBioregion} (${currentMultiplier}x)` : ''}`;
+            display.className = `risk-display ${risk.class}`;
+        }
+
+        function updateCharts() {
+            const data = RISK_METRICS.map(m => parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0);
+            if (radarChart) radarChart.data.datasets[0].data = data;
+            if (barChart) barChart.data.datasets[0].data = data;
+            if (radarChart) radarChart.update();
+            if (barChart) barChart.update();
+        }
+
+        function updateRecommendations() {
+            const recs = [];
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                if (v > 80) recs.push({ metric: m.label, level: 'high', msg: `URGENT: ${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} requires immediate intervention.` });
+                else if (v > 60) recs.push({ metric: m.label, level: 'medium', msg: `${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} shows elevated levels. Develop mitigation strategy.` });
+                else if (v > 40) recs.push({ metric: m.label, level: 'medium', msg: `Monitor ${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} levels. Consider preventive measures.` });
+                else if (v > 20) recs.push({ metric: m.label, level: 'low', msg: `${m.label.replace(/[^a-zA-Z\s]/g,'').trim()} within acceptable range. Continue monitoring.` });
+            });
+            if (selectedBioregion && selectedBioregion !== "Northern Slopes") {
+                recs.push({ metric: "Bioregion Alert", level: 'medium', msg: `Project located in ${selectedBioregion}. Enhanced controls may be required.` });
+            }
+            const container = document.getElementById('recommendations-container');
+            if (recs.length === 0) { container.innerHTML = '<p style="color:var(--primary);">✓ All impacts within acceptable limits.</p>'; return; }
+            container.innerHTML = recs.slice(0, 5).map(r => `
+                <div class="recommendation-item recommendation-${r.level}">
+                    <strong>${r.metric.replace(/[^a-zA-Z\s]/g,'').trim()}:</strong> ${r.msg}
+                </div>
+            `).join('');
+        }
+
+        function updateProgress() {
+            let completed = 0;
+            RISK_METRICS.forEach(m => { if (parseFloat(document.getElementById(`slider-${m.id}`)?.value) > 0) completed++; });
+            const percent = Math.round((completed / RISK_METRICS.length) * 100);
+            const bar = document.getElementById('progress-bar');
+            const text = document.getElementById('progress-text');
+            bar.style.width = `${percent}%`;
+            bar.textContent = `${percent}%`;
+            text.textContent = `Risk assessment: ${percent}% (${completed}/${RISK_METRICS.length} metrics)`;
+        }
+
+        function updateBudget() {
+            const area = parseFloat(document.getElementById('project-area')?.value) || 1;
+            let total = 0; let items = [];
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                const cost = v * 75 * area * currentMultiplier;
+                total += cost;
+                if (v > 0) items.push(`<div class="budget-item"><span>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</span><span>$${Math.round(cost).toLocaleString()}</span></div>`);
+            });
+            const container = document.getElementById('budget-container');
+            container.innerHTML = `
+                ${items.length > 0 ? items.join('') : '<p style="color:var(--text-gray);">Adjust risk sliders to see cost estimates</p>'}
+                <div class="budget-total"><span>Total Estimated Cost:</span><span style="color:var(--primary);">$${Math.round(total).toLocaleString()}</span></div>
+                <p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.5rem;">* Based on ${area} ha, risk levels${selectedBioregion ? `, ${selectedBioregion} (${currentMultiplier}x)` : ''}</p>
+            `;
+        }
+
+        function updateRiskComparison() {
+            const currentData = RISK_METRICS.map(m => parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0);
+            if (!previousRiskData) previousRiskData = currentData.map(() => Math.floor(Math.random() * 30));
+            const container = document.getElementById('risk-comparison');
+            let html = '<h4 style="margin-bottom:1rem;">Comparison with Previous Assessment</h4>';
+            RISK_METRICS.forEach((m, i) => {
+                const cur = currentData[i], prev = previousRiskData[i], diff = cur - prev;
+                const trend = diff > 0 ? '↑ Increase' : diff < 0 ? '↓ Decrease' : '→ Stable';
+                const color = diff > 0 ? 'var(--danger)' : diff < 0 ? 'var(--primary)' : 'var(--text-gray)';
+                html += `<div style="display:flex; justify-content:space-between; padding:0.5rem 0; border-bottom:1px solid var(--border);">
+                    <span>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</span>
+                    <span>Previous: ${prev}%</span>
+                    <span>Current: ${cur}%</span>
+                    <span style="color:${color};">${trend} (${Math.abs(diff)}%)</span>
+                </div>`;
+            });
+            container.innerHTML = html;
+            previousRiskData = [...currentData];
+        }
+
+        function updateProjections() {
+            const container = document.getElementById('projections-container');
+            let html = '<h4 style="margin-bottom:1rem;">10-Year Impact Projections (Without Mitigation)</h4>';
+            RISK_METRICS.forEach(m => {
+                const cur = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                const p5 = Math.min(100, Math.round(cur * 1.3));
+                const p10 = Math.min(100, Math.round(cur * 1.6));
+                const p20 = Math.min(100, Math.round(cur * 2.2));
+                html += `
+                    <div style="margin-bottom:1rem; padding:0.75rem; background:#f9fafb; border-radius:8px;">
+                        <strong>${m.label.replace(/[^a-zA-Z\s]/g,'').trim()}</strong>
+                        <div style="display:flex; gap:1rem; margin-top:0.5rem; font-size:0.875rem; flex-wrap:wrap;">
+                            <span>Current: ${cur}%</span>
+                            <span>→ 5 Yr: ${p5}%</span>
+                            <span>→ 10 Yr: ${p10}%</span>
+                            <span>→ 20 Yr: ${p20}%</span>
+                        </div>
+                        <div class="progress-container" style="margin-top:0.5rem; height:6px;">
+                            <div class="progress-bar" style="width:${p20}%; background:var(--danger);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderCompliance() {
+            const container = document.getElementById('compliance-container');
+            if (!container) return;
+            const riskValues = {};
+            RISK_METRICS.forEach(m => { riskValues[m.id] = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0; });
+            const updatedPolicies = POLICIES.map(p => {
+                let status = p.status;
+                if (p.criteria && p.criteria.length > 0) {
+                    const relevantRisks = p.criteria.map(c => riskValues[c] || 0);
+                    const maxRisk = Math.max(...relevantRisks, 0);
+                    if (maxRisk > 70) status = "Non-Compliant";
+                    else if (maxRisk > 50) status = "Partial";
+                    else if (maxRisk > 30) status = "Under Review";
+                    else if (maxRisk > 0) status = "Compliant";
+                }
+                return { ...p, status };
+            });
+            let compliantCount = 0, partialCount = 0, nonCompliantCount = 0;
+            container.innerHTML = updatedPolicies.map(p => {
+                let statusClass = '';
+                switch(p.status) {
+                    case 'Compliant': statusClass = 'status-compliant'; compliantCount++; break;
+                    case 'Partial': case 'In Progress': statusClass = 'status-partial'; partialCount++; break;
+                    case 'Non-Compliant': statusClass = 'status-non-compliant'; nonCompliantCount++; break;
+                    default: statusClass = 'status-review'; partialCount++;
+                }
+                return `<div class="compliance-item">
+                    <div style="flex:1;"><strong>${p.name}</strong><p style="font-size:0.75rem; color:var(--text-gray); margin-top:0.25rem;">${p.description}</p></div>
+                    <div style="text-align:right;">
+                        <span class="compliance-status ${statusClass}">${p.status}</span><br>
+                        <a href="${p.reference}" target="_blank" class="compliance-link">View Standard →</a>
+                    </div>
+                </div>`;
+            }).join('');
+            const totalPolicies = updatedPolicies.filter(p => p.status !== 'Not Applicable').length;
+            const score = Math.round((compliantCount / totalPolicies) * 100);
+            let scoreColor = '', scoreMessage = '';
+            if (score >= 80) { scoreColor = 'var(--primary)'; scoreMessage = 'Excellent - All major requirements met'; }
+            else if (score >= 60) { scoreColor = 'var(--warning)'; scoreMessage = 'Good - Some areas need attention'; }
+            else { scoreColor = 'var(--danger)'; scoreMessage = 'Action Required - Multiple compliance gaps identified'; }
+            document.getElementById('compliance-score').innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+                    <div><span style="font-size:1.25rem;">Overall Compliance Score: <span style="color:${scoreColor};">${score}%</span></span>
+                    <p style="font-size:0.875rem; margin-top:0.25rem;">${scoreMessage}</p></div>
+                    <div style="display:flex; gap:1rem;">
+                        <span style="color:var(--primary);">✓ Compliant: ${compliantCount}</span>
+                        <span style="color:var(--warning);">⚠️ Partial: ${partialCount}</span>
+                        <span style="color:var(--danger);">✗ Non-Compliant: ${nonCompliantCount}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // TIMELINE & STAKEHOLDERS
+        // ============================================
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            if (milestones.length === 0) { container.innerHTML = '<p>No milestones added.</p>'; return; }
+            container.innerHTML = milestones.map((m, i) => `
+                <div class="timeline-item">
+                    <h4>${m.name}</h4>
+                    <input type="date" value="${m.date}" onchange="updateMilestoneDate(${i}, this.value)" style="width:160px;">
+                    ${m.editable ? `<button class="btn btn-sm btn-danger" onclick="deleteMilestone(${i})">Delete</button>` : '<span style="font-size:0.75rem; color:var(--text-gray);">Default</span>'}
+                </div>
+            `).join('');
+        }
+
+        function addMilestone() {
+            const name = document.getElementById('milestone-name').value.trim();
+            const date = document.getElementById('milestone-date').value;
+            if (!name) { showNotification('Please enter a milestone name', 'error'); return; }
+            milestones.push({ name, date, editable: true });
+            renderTimeline();
+            document.getElementById('milestone-name').value = '';
+            document.getElementById('milestone-date').value = '';
+            showNotification('Milestone added', 'success');
+            saveToLocalStorage();
+        }
+
+        function updateMilestoneDate(index, date) { milestones[index].date = date; renderTimeline(); saveToLocalStorage(); }
+        function deleteMilestone(index) { milestones.splice(index, 1); renderTimeline(); saveToLocalStorage(); showNotification('Milestone deleted', 'success'); }
+
+        function addStakeholder() {
+            const role = document.getElementById('stakeholder-role').value.trim();
+            const status = document.getElementById('stakeholder-status').value;
+            const email = document.getElementById('stakeholder-email').value.trim();
+            const phone = document.getElementById('stakeholder-phone').value.trim();
+            const comments = document.getElementById('stakeholder-comments').value.trim();
+            if (!role) { showNotification('Please enter a stakeholder role', 'error'); return; }
+            stakeholders.push({ id: Date.now(), role, status, email, phone, comments, dateAdded: new Date().toISOString() });
+            renderStakeholders();
+            document.getElementById('stakeholder-role').value = '';
+            document.getElementById('stakeholder-email').value = '';
+            document.getElementById('stakeholder-phone').value = '';
+            document.getElementById('stakeholder-comments').value = '';
+            showNotification('Stakeholder added', 'success');
+            saveToLocalStorage();
+        }
+
+        function renderStakeholders() {
+            const container = document.getElementById('stakeholder-list');
+            if (stakeholders.length === 0) { container.innerHTML = '<p style="color:var(--text-gray); text-align:center;">No stakeholders added yet.</p>'; updateStakeholderProgress(); return; }
+            container.innerHTML = `<div class="stakeholder-grid">${stakeholders.map(s => `
+                <div class="stakeholder-card">
+                    <h4>${escapeHtml(s.role)}</h4>
+                    <p><strong>Status:</strong> <span class="status-badge status-${s.status.toLowerCase().replace(' ', '-')}">${s.status}</span></p>
+                    ${s.email ? `<p><strong>Email:</strong> ${escapeHtml(s.email)}</p>` : ''}
+                    ${s.phone ? `<p><strong>Phone:</strong> ${escapeHtml(s.phone)}</p>` : ''}
+                    ${s.comments ? `<p><strong>Comments:</strong> ${escapeHtml(s.comments)}</p>` : ''}
+                    <button class="btn btn-sm btn-danger" onclick="deleteStakeholder(${s.id})" style="margin-top:0.5rem;">Remove</button>
+                </div>
+            `).join('')}</div>`;
+            updateStakeholderProgress();
+        }
+
+        function deleteStakeholder(id) { stakeholders = stakeholders.filter(s => s.id !== id); renderStakeholders(); saveToLocalStorage(); showNotification('Stakeholder removed', 'success'); }
+        function updateStakeholderProgress() {
+            const confirmed = stakeholders.filter(s => s.status === 'Confirmed').length;
+            const percent = stakeholders.length > 0 ? Math.round((confirmed / stakeholders.length) * 100) : 0;
+            const bar = document.getElementById('stakeholder-progress');
+            const text = document.getElementById('stakeholder-progress-text');
+            bar.style.width = `${percent}%`;
+            bar.textContent = `${percent}%`;
+            text.textContent = `Stakeholder engagement: ${percent}% confirmed (${confirmed}/${stakeholders.length})`;
+        }
+
+        // ============================================
+        // SAVE / LOAD / CSV / PDF
+        // ============================================
+        function saveToLocalStorage() {
+            const riskValues = RISK_METRICS.map(m => document.getElementById(`slider-${m.id}`).value);
+            const selectedActivities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
+            const mapData = getMapData();
+            const data = {
+                projectName: document.getElementById('project-name').value,
+                location: document.getElementById('location').value,
+                assessorName: document.getElementById('assessor-name').value,
+                assessmentDate: document.getElementById('assessment-date').value,
+                projectDescription: document.getElementById('project-description').value,
+                projectPurpose: document.getElementById('project-purpose').value,
+                floraFauna: document.getElementById('flora-fauna').value,
+                soilType: document.getElementById('soil-type').value,
+                waterways: document.getElementById('waterways').value,
+                ecoDistance: document.getElementById('eco-distance').value,
+                infraDistance: document.getElementById('infra-distance').value,
+                landUse: document.getElementById('land-use').value,
+                currentActivities: document.getElementById('current-activities').value,
+                accessibility: document.getElementById('accessibility').value,
+                riskValues, selectedActivities, stakeholders, milestones,
+                projectArea: document.getElementById('project-area').value,
+                selectedBioregion,
+                mapData: mapData
+            };
+            localStorage.setItem('eia_assessment_complete', JSON.stringify(data));
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('eia_assessment_complete');
+            if (!saved) return;
+            try {
+                const data = JSON.parse(saved);
+                document.getElementById('project-name').value = data.projectName || '';
+                document.getElementById('location').value = data.location || '';
+                document.getElementById('assessor-name').value = data.assessorName || '';
+                document.getElementById('assessment-date').value = data.assessmentDate || '';
+                document.getElementById('project-description').value = data.projectDescription || '';
+                document.getElementById('project-purpose').value = data.projectPurpose || '';
+                document.getElementById('flora-fauna').value = data.floraFauna || '';
+                document.getElementById('soil-type').value = data.soilType || '';
+                document.getElementById('waterways').value = data.waterways || '';
+                document.getElementById('eco-distance').value = data.ecoDistance || 0;
+                document.getElementById('infra-distance').value = data.infraDistance || 0;
+                document.getElementById('land-use').value = data.landUse || '';
+                document.getElementById('current-activities').value = data.currentActivities || '';
+                document.getElementById('accessibility').value = data.accessibility || '';
+                document.getElementById('project-area').value = data.projectArea || 1;
+                if (data.riskValues) {
+                    RISK_METRICS.forEach((m, i) => {
+                        const slider = document.getElementById(`slider-${m.id}`);
+                        if (slider && data.riskValues[i]) {
+                            slider.value = data.riskValues[i];
+                            document.getElementById(`value-${m.id}`).textContent = data.riskValues[i];
+                            updateResultIndicator(m.id, parseInt(data.riskValues[i]));
+                        }
+                    });
+                }
+                if (data.stakeholders) stakeholders = data.stakeholders;
+                if (data.milestones) milestones = data.milestones;
+                if (data.selectedBioregion) {
+                    const br = TAS_BIOREGIONS.find(b => b.name === data.selectedBioregion);
+                    if (br) selectBioregion(br.name, br.multiplier);
+                }
+                renderStakeholders();
+                renderTimeline();
+                updateAllCalculations();
+                showNotification('Previous session loaded', 'success');
+            } catch (e) { console.error('Failed to load saved data:', e); }
+        }
+
+        function loadFromLocalStorage() { loadSavedData(); }
+
+        function saveToCSV() {
+            const riskValues = RISK_METRICS.map(m => document.getElementById(`slider-${m.id}`).value).join(';');
+            const activities = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value).join(';');
+            const score = calculateTotalRisk();
+            const riskLevel = getRiskLevel(score).level;
+            const mapData = getMapData();
+            const rows = [
+                ['Section','Field','Value'],
+                ['Project','Project Name', document.getElementById('project-name').value || 'N/A'],
+                ['Project','Location', document.getElementById('location').value || 'N/A'],
+                ['Project','Assessor', document.getElementById('assessor-name').value || 'N/A'],
+                ['Project','Assessment Date', document.getElementById('assessment-date').value || 'N/A'],
+                ['Tasmania','Bioregion', selectedBioregion || 'Not selected'],
+                ['Risk','Overall Score', score],
+                ['Risk','Risk Level', riskLevel],
+                ['Risk','Detailed Metrics', riskValues],
+                ['Activities','Selected Activities', activities],
+                ['Budget','Project Area (ha)', document.getElementById('project-area').value || '1'],
+                ['Stakeholders','Total', stakeholders.length],
+                ['Stakeholders','Confirmed', stakeholders.filter(s => s.status === 'Confirmed').length],
+                ['Milestones','Total', milestones.length],
+                ['Map','Latitude', mapData ? mapData.lat : 'N/A'],
+                ['Map','Longitude', mapData ? mapData.lng : 'N/A'],
+                ['Map','Address', mapData ? mapData.address : 'N/A']
+            ];
+            const csvContent = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `EIA_Assessment_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('Data exported to CSV', 'success');
+        }
+
+        function loadFromCSV(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split('\n');
+                for (let i = 1; i < lines.length; i++) {
+                    const parts = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (parts.length >= 3) {
+                        const field = parts[1].replace(/^"|"$/g, '');
+                        const value = parts[2].replace(/^"|"$/g, '');
+                        const map = { 'Project Name': 'project-name', 'Location': 'location', 'Assessor': 'assessor-name', 'Assessment Date': 'assessment-date', 'Project Area (ha)': 'project-area' };
+                        const elId = map[field];
+                        if (elId && document.getElementById(elId)) document.getElementById(elId).value = value;
+                    }
+                }
+                updateAllCalculations();
+                showNotification('Data loaded from CSV', 'success');
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // ============================================
+        // PROFESSIONAL PDF GENERATION WITH MAP
+        // ============================================
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.width;
+            const margin = 20;
+            let y = margin;
+            
+            function sanitize(text) {
+                if (typeof text !== 'string') return 'N/A';
+                return text.replace(/[^\w\s.,;:!?()\-'"&@\/\\[\]{}<>+=*~%#| ]/g, '').trim() || 'N/A';
+            }
+            
+            function addText(text, x, y, fontSize = 10, maxWidth = pageWidth - margin * 2) {
+                doc.setFontSize(fontSize);
+                doc.setTextColor(0, 0, 0);
+                const lines = doc.splitTextToSize(sanitize(text), maxWidth);
+                doc.text(lines, x, y);
+                return y + lines.length * (fontSize * 0.45);
+            }
+            
+            function addHeading(text, y, fontSize = 14) {
+                doc.setFontSize(fontSize);
+                doc.setTextColor(30, 90, 62);
+                doc.setFont('helvetica', 'bold');
+                const lines = doc.splitTextToSize(sanitize(text), pageWidth - margin * 2);
+                doc.text(lines, margin, y);
+                doc.setFont('helvetica', 'normal');
+                return y + (fontSize === 14 ? 10 : 7);
+            }
+            
+            function addDivider(y) {
+                doc.setDrawColor(30, 90, 62);
+                doc.setLineWidth(0.5);
+                doc.line(margin, y, pageWidth - margin, y);
+                return y + 6;
+            }
+            
+            function checkPage(y, needed = 15) {
+                if (y > doc.internal.pageSize.height - margin - needed) {
+                    doc.addPage();
+                    return margin;
+                }
+                return y;
+            }
+
+            // ===== TITLE PAGE =====
+            doc.setFontSize(28);
+            doc.setTextColor(30, 90, 62);
+            doc.setFont('helvetica', 'bold');
+            const titleLines = doc.splitTextToSize('Tasmanian Environmental Impact Assessment Report', pageWidth - margin * 2);
+            doc.text(titleLines, margin, y);
+            y += titleLines.length * 8 + 10;
+            
+            doc.setFontSize(16);
+            doc.setTextColor(60, 60, 60);
+            doc.setFont('helvetica', 'normal');
+            const subLines = doc.splitTextToSize('Professional Assessment Report', pageWidth - margin * 2);
+            doc.text(subLines, margin, y);
+            y += subLines.length * 6 + 15;
+            
+            const projName = sanitize(document.getElementById('project-name').value || 'Unnamed Project');
+            doc.setFontSize(14);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Project: ${projName}`, margin, y);
+            y += 8;
+            doc.text(`Assessor: ${sanitize(document.getElementById('assessor-name').value || 'Not specified')}`, margin, y);
+            y += 8;
+            doc.text(`Date: ${sanitize(document.getElementById('assessment-date').value || new Date().toLocaleDateString())}`, margin, y);
+            y += 8;
+            doc.text(`Location: ${sanitize(document.getElementById('location').value || 'Not specified')}`, margin, y);
+            y += 15;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, margin, y);
+            y += 20;
+            
+            // ===== MAP PAGE =====
+            const mapData = getMapData();
+            if (mapData) {
+                doc.addPage();
+                y = margin;
+                y = addHeading('Project Location Map', y, 16);
+                y = addDivider(y);
+                doc.setFontSize(11);
+                doc.setTextColor(0,0,0);
+                y = addText(`Coordinates: ${mapData.lat.toFixed(6)}, ${mapData.lng.toFixed(6)}`, margin, y, 11);
+                y += 4;
+                y = addText(`Address: ${sanitize(mapData.address || 'Location on map')}`, margin, y, 11);
+                y += 8;
+                
+                // Draw a professional map representation with a marker
+                doc.setDrawColor(200, 200, 200);
+                doc.setFillColor(240, 248, 240);
+                doc.rect(margin, y, pageWidth - margin * 2, 90, 'FD');
+                doc.setDrawColor(30, 90, 62);
+                doc.setLineWidth(1);
+                doc.rect(margin, y, pageWidth - margin * 2, 90);
+                
+                // Draw a crosshair/grid pattern
+                doc.setDrawColor(200, 200, 200);
+                doc.setLineWidth(0.3);
+                const centerX = pageWidth / 2;
+                const centerY = y + 45;
+                // Grid lines
+                for (let i = -3; i <= 3; i++) {
+                    doc.line(centerX + i * 20, centerY - 30, centerX + i * 20, centerY + 30);
+                    doc.line(centerX - 30, centerY + i * 20, centerX + 30, centerY + i * 20);
+                }
+                
+                // Draw marker
+                doc.setFillColor(200, 50, 50);
+                doc.circle(centerX, centerY, 8, 'F');
+                doc.setFillColor(255, 255, 255);
+                doc.circle(centerX, centerY, 4, 'F');
+                
+                // Draw a pin shape
+                doc.setDrawColor(200, 50, 50);
+                doc.setLineWidth(1);
+                doc.line(centerX, centerY + 8, centerX, centerY + 25);
+                doc.setFillColor(200, 50, 50);
+                doc.triangle(centerX - 4, centerY + 25, centerX + 4, centerY + 25, centerX, centerY + 32, 'F');
+                
+                // Label
+                doc.setFontSize(9);
+                doc.setTextColor(60, 60, 60);
+                doc.setFont('helvetica', 'bold');
+                doc.text('● Project Location', centerX - 25, y + 78);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.text('(approximate position)', centerX - 22, y + 86);
+                
+                y += 100;
+                
+                // Add map disclaimer
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.text('Map data © OpenStreetMap contributors. Location is approximate.', margin, y);
+                y += 10;
+            }
+
+            // ===== CONTENT PAGES =====
+            // 1. Project Details
+            doc.addPage();
+            y = margin;
+            y = addHeading('1. Project Details', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(10);
+            doc.setTextColor(0,0,0);
+            y = addText(`Project Name: ${sanitize(document.getElementById('project-name').value)}`, margin, y, 10);
+            y = addText(`Location: ${sanitize(document.getElementById('location').value)}`, margin, y, 10);
+            y = addText(`Assessor: ${sanitize(document.getElementById('assessor-name').value)}`, margin, y, 10);
+            y = addText(`Assessment Date: ${sanitize(document.getElementById('assessment-date').value)}`, margin, y, 10);
+            y = addText(`Bioregion: ${sanitize(selectedBioregion || 'Not selected')}`, margin, y, 10);
+            y = addText(`Description: ${sanitize(document.getElementById('project-description').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Purpose: ${sanitize(document.getElementById('project-purpose').value || 'Not provided')}`, margin, y, 10);
+            y += 6;
+            
+            // 2. Site Information
+            y = checkPage(y, 40);
+            y = addHeading('2. Site Information', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(10);
+            y = addText(`Flora & Fauna: ${sanitize(document.getElementById('flora-fauna').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Soil Type: ${sanitize(document.getElementById('soil-type').value || 'Not specified')}`, margin, y, 10);
+            y = addText(`Waterways: ${sanitize(document.getElementById('waterways').value || 'None')}`, margin, y, 10);
+            y = addText(`Distance to Sensitive Ecosystems: ${sanitize(document.getElementById('eco-distance').value)} km`, margin, y, 10);
+            y = addText(`Distance to Critical Infrastructure: ${sanitize(document.getElementById('infra-distance').value)} km`, margin, y, 10);
+            y = addText(`Land Use History: ${sanitize(document.getElementById('land-use').value || 'Not provided')}`, margin, y, 10);
+            y = addText(`Current Activities: ${sanitize(document.getElementById('current-activities').value || 'Not provided')}`, margin, y, 10);
+            y += 6;
+            
+            // 3. Risk Assessment
+            y = checkPage(y, 40);
+            y = addHeading('3. Risk Assessment', y, 14);
+            y = addDivider(y);
+            const score = calculateTotalRisk();
+            const risk = getRiskLevel(score);
+            doc.setFontSize(12);
+            doc.setTextColor(0,0,0);
+            doc.setFont('helvetica', 'bold');
+            y = addText(`Overall Risk Score: ${score}% (${risk.level})`, margin, y, 12);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            y += 4;
+            RISK_METRICS.forEach(m => {
+                const v = document.getElementById(`slider-${m.id}`)?.value || 0;
+                const label = m.label.replace(/[^a-zA-Z\s]/g,'').trim();
+                const indicator = RESULT_INDICATORS[m.id]?.find(i => v <= i.max)?.label || 'Unknown';
+                y = addText(`${label}: ${v}% (${indicator})`, margin + 5, y, 10);
+                y = checkPage(y, 20);
+            });
+            y += 4;
+            
+            // 4. Compliance
+            y = checkPage(y, 30);
+            y = addHeading('4. Compliance Summary', y, 14);
+            y = addDivider(y);
+            const compliantCount = POLICIES.filter(p => p.status === 'Compliant').length;
+            doc.setFontSize(10);
+            y = addText(`Overall Compliance: ${Math.round((compliantCount / POLICIES.length) * 100)}%`, margin, y, 10);
+            y = addText(`Compliant Policies: ${compliantCount} of ${POLICIES.length}`, margin, y, 10);
+            y += 2;
+            POLICIES.slice(0, 6).forEach(p => {
+                y = addText(`• ${p.name}: ${p.status}`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            y += 4;
+            
+            // 5. EPBC Status
+            y = checkPage(y, 25);
+            y = addHeading('5. EPBC Act Status', y, 14);
+            y = addDivider(y);
+            const epbcDiv = document.getElementById('epbc-container');
+            let epbcText = epbcDiv ? sanitize(epbcDiv.innerText || 'Not assessed').substring(0, 400) : 'Not assessed';
+            y = addText(epbcText, margin, y, 10);
+            y += 6;
+            
+            // 6. Activities
+            y = checkPage(y, 25);
+            y = addHeading('6. Selected Environmental Activities', y, 14);
+            y = addDivider(y);
+            const acts = Array.from(document.querySelectorAll('#activities-container input:checked')).map(cb => cb.value);
+            if (acts.length === 0) {
+                y = addText('No activities selected', margin, y, 10);
+            } else {
+                acts.slice(0, 10).forEach(a => {
+                    y = addText(`• ${sanitize(a)}`, margin + 5, y, 9);
+                    y = checkPage(y, 15);
+                });
+                if (acts.length > 10) {
+                    y = addText(`... and ${acts.length - 10} more`, margin + 5, y, 9);
+                }
+            }
+            y += 4;
+            
+            // 7. Stakeholders
+            y = checkPage(y, 25);
+            y = addHeading('7. Stakeholder Engagement', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(10);
+            y = addText(`Total Stakeholders: ${stakeholders.length}`, margin, y, 10);
+            y = addText(`Confirmed: ${stakeholders.filter(s => s.status === 'Confirmed').length}`, margin, y, 10);
+            y = addText(`Pending: ${stakeholders.filter(s => s.status === 'Pending').length}`, margin, y, 10);
+            y += 2;
+            stakeholders.slice(0, 5).forEach(s => {
+                y = addText(`• ${sanitize(s.role)} (${s.status})${s.email ? ` - ${sanitize(s.email)}` : ''}`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            if (stakeholders.length > 5) {
+                y = addText(`... and ${stakeholders.length - 5} more`, margin + 5, y, 9);
+            }
+            y += 4;
+            
+            // 8. Budget
+            y = checkPage(y, 25);
+            y = addHeading('8. Budget Estimate', y, 14);
+            y = addDivider(y);
+            const area = document.getElementById('project-area').value || 1;
+            let totalBudget = 0;
+            RISK_METRICS.forEach(m => {
+                const v = parseFloat(document.getElementById(`slider-${m.id}`)?.value) || 0;
+                totalBudget += v * 75 * parseFloat(area) * currentMultiplier;
+            });
+            doc.setFontSize(10);
+            y = addText(`Project Area: ${area} hectares`, margin, y, 10);
+            y = addText(`Bioregion Multiplier: ${currentMultiplier}x${selectedBioregion ? ` (${selectedBioregion})` : ''}`, margin, y, 10);
+            y = addText(`Estimated Total Cost: $${Math.round(totalBudget).toLocaleString()}`, margin, y, 12);
+            y += 6;
+            
+            // 9. Milestones
+            y = checkPage(y, 25);
+            y = addHeading('9. Project Milestones', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(10);
+            milestones.forEach(m => {
+                y = addText(`• ${sanitize(m.name)}${m.date ? ` (${m.date})` : ''}`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            y += 4;
+            
+            // 10. Legislation Summary
+            y = checkPage(y, 25);
+            y = addHeading('10. Tasmanian Legislation Summary', y, 14);
+            y = addDivider(y);
+            doc.setFontSize(9);
+            TAS_LEGISLATION_SUMMARY.slice(0, 5).forEach(leg => {
+                y = addText(`• ${leg.name}: ${leg.description.substring(0, 60)}...`, margin + 5, y, 9);
+                y = checkPage(y, 15);
+            });
+            y += 4;
+            
+            // ===== APPLY FOOTERS =====
+            const totalPages = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150, 150, 150);
+                doc.setFont('helvetica', 'normal');
+                const footerText = `Tasmanian EIA Report - Page ${i} of ${totalPages} - Professional Assessment`;
+                doc.text(footerText, margin, doc.internal.pageSize.height - 10);
+            }
+            
+            const filename = `Tasmania_EIA_Report_${sanitize(document.getElementById('project-name').value || 'project')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(filename);
+            showNotification('Professional PDF report generated with map location', 'success');
+        }
+
+        // ============================================
+        // RESET & HELPERS
+        // ============================================
+        function resetAllData() {
+            if (!confirm('⚠️ WARNING: This will permanently delete ALL data. Are you sure?')) return;
+            document.querySelectorAll('input, textarea, select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else if (el.type === 'range') el.value = '0';
+                else if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                else if (el.type !== 'file' && el.id !== 'assessment-date') el.value = '';
+            });
+            document.getElementById('assessment-date').valueAsDate = new Date();
+            RISK_METRICS.forEach(m => {
+                document.getElementById(`value-${m.id}`).textContent = '0';
+                updateResultIndicator(m.id, 0);
+            });
+            stakeholders = [];
+            milestones = milestones.filter(m => !m.editable);
+            selectedBioregion = null; currentMultiplier = 1.0;
+            document.querySelectorAll('.bioregion-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('selected-bioregion-info').innerHTML = '';
+            document.getElementById('bioregion-risk-impact').innerHTML = '';
+            document.getElementById('offsets-result').style.display = 'none';
+            // Clear map
+            clearMarker();
+            localStorage.removeItem('eia_assessment_complete');
+            renderStakeholders();
+            renderTimeline();
+            updateAllCalculations();
+            showNotification('All data reset', 'info');
+        }
+
+        function submitFeedback() {
+            const feedback = document.getElementById('user-feedback').value.trim();
+            if (!feedback) { showNotification('Please enter your feedback', 'error'); return; }
+            console.log('Feedback:', feedback);
+            showNotification('Thank you for your feedback!', 'success');
+            document.getElementById('user-feedback').value = '';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+        }
+
+        function showNotification(message, type = 'info') {
+            const el = document.createElement('div');
+            el.className = 'notification';
+            const colors = { success: '#2a6f4b', error: '#c84f43', info: '#4a90e2' };
+            el.style.background = colors[type] || colors.info;
+            el.textContent = message;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        function toggleCard(header) {
+            const content = header.nextElementSibling;
+            const isCollapsed = header.classList.contains('collapsed');
+            header.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+            
+            // Check if this is the map card being expanded
+            const headerText = header.querySelector('h2')?.textContent || '';
+            if (headerText.includes('🗺️') && isCollapsed) {
+                // Map card is being expanded
+                setTimeout(ensureMapVisible, 400);
+            }
+        }
+
+        // This function should be called when the map card is expanded
+        function ensureMapVisible() {
+            if (!mapInitialized) {
+                // Try to initialize the map
+                initMap();
+            } else if (map) {
+                // If map exists but might be hidden, invalidate size
+                setTimeout(() => {
+                    map.invalidateSize();
+                    console.log('Map size invalidated on card expand');
+                }, 300);
+            }
+        }
+
+        // ============================================
+        // RENDER FUNCTIONS - Defined before use
+        // ============================================
+        function renderRiskComparison() {
+            updateRiskComparison();
+        }
+
+        function renderProjections() {
+            updateProjections();
+        }
+    </script>
+</body>
+</html>
